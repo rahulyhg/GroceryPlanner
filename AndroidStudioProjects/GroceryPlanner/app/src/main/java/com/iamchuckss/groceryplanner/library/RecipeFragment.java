@@ -1,5 +1,7 @@
 package com.iamchuckss.groceryplanner.library;
 
+import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
@@ -16,6 +18,8 @@ import com.iamchuckss.groceryplanner.utils.RecipeFragmentRecyclerViewAdapter;
 
 import java.util.ArrayList;
 
+import de.hdodenhof.circleimageview.CircleImageView;
+
 public class RecipeFragment extends Fragment {
     private static final String TAG = "RecipeFragment";
 
@@ -24,8 +28,11 @@ public class RecipeFragment extends Fragment {
     private ArrayList<String> mRecipeDetails1 = new ArrayList<>();
     private ArrayList<String> mRecipeDetails2 = new ArrayList<>();
 
+    Context mContext = getActivity();
+
     // widgets
     RecyclerView recyclerView;
+    CircleImageView addRecipeButton;
 
     @Nullable
     @Override
@@ -33,8 +40,11 @@ public class RecipeFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_recipe, container, false);
         Log.d(TAG, "onCreateView: started.");
 
+        mContext = getActivity();
         recyclerView = view.findViewById(R.id.recyclerView);
+        addRecipeButton = (CircleImageView) view.findViewById(R.id.btnAddRecipe);
 
+        initAddRecipeButton();
         initRecipes();
 
         return view;
@@ -69,10 +79,20 @@ public class RecipeFragment extends Fragment {
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: init recyclerview");
 
-        RecipeFragmentRecyclerViewAdapter adapter = new RecipeFragmentRecyclerViewAdapter(getActivity()
-                , mRecipeTitles, mRecipeDetails1, mRecipeDetails2);
+        RecipeFragmentRecyclerViewAdapter adapter = new RecipeFragmentRecyclerViewAdapter(mContext, mRecipeTitles, mRecipeDetails1, mRecipeDetails2);
 
         recyclerView.setAdapter(adapter);
-        recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+        recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
+    }
+
+    private void initAddRecipeButton() {
+        addRecipeButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Log.d(TAG, "onClick: navigating to AddRecipeActivity.");
+                Intent intent = new Intent(mContext, AddRecipeActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 }
