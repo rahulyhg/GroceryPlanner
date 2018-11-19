@@ -1,27 +1,32 @@
 package com.iamchuckss.groceryplanner.library;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.iamchuckss.groceryplanner.R;
 import com.iamchuckss.groceryplanner.models.Ingredient;
-import com.iamchuckss.groceryplanner.utils.IngredientFragmentRecyclerViewAdapter;
 
+import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.HashMap;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class SelectIngredientsActivity extends AppCompatActivity {
 
@@ -29,18 +34,25 @@ public class SelectIngredientsActivity extends AppCompatActivity {
 
     // vars
     ArrayList<Ingredient> mIngredientList = new ArrayList<>();
+    ArrayList<Ingredient> mSelectedIngredientsList = new ArrayList<>();
 
     Context mContext = SelectIngredientsActivity.this;
 
     // widgets
     RecyclerView recyclerView;
+    ImageView mBackButton;
+    ImageView mDoneButton;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         Log.d(TAG, "onCreate: started.");
 
+        setContentView(R.layout.activity_select_ingredients);
+
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
+        mBackButton = (ImageView) findViewById(R.id.backArrow);
+        mDoneButton = (ImageView) findViewById(R.id.done_button);
 
         initIngredients();
     }
@@ -48,10 +60,10 @@ public class SelectIngredientsActivity extends AppCompatActivity {
     private void initIngredients() {
         Log.d(TAG, "initIngredients: preparing recipes.");
 
-        mIngredientList.add(new Ingredient("Curry Powder", 0));
-        mIngredientList.add(new Ingredient("Cumin Powder", 0));
-        mIngredientList.add(new Ingredient("Coriander", 0));
-        mIngredientList.add(new Ingredient("Mustard Seeds", 0));
+        mIngredientList.add(new Ingredient("Curry Powder"));
+        mIngredientList.add(new Ingredient("Cumin Powder"));
+        mIngredientList.add(new Ingredient("Coriander"));
+        mIngredientList.add(new Ingredient("Mustard Seeds"));
 
         initRecyclerView();
     }
@@ -65,6 +77,60 @@ public class SelectIngredientsActivity extends AppCompatActivity {
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
     }
+
+    public void initQuantityBox() {
+
+    }
+
+    /**
+     * Return to previous activity.
+     */
+    private void initBackButton() {
+        mBackButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                finish();
+            }
+        });
+    }
+
+    /**
+     * Return list of selected ingredients to previous activity on button click
+     */
+    private void initDoneButton() {
+        mDoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                // fetch ingredients with quantity
+                for(int i = 0; i < mIngredientList.size(); i++) {
+                    if(isIngredientSelected(i)) {
+                        mSelectedIngredientsList.add(mIngredientList.get(i));
+                    }
+                }
+
+                // return result
+                Intent intent = new Intent();
+                intent.putExtra("selectedIngredients", (Serializable) mIngredientList);
+                setResult(RESULT_OK, intent);
+                finish();
+            }
+        });
+    }
+
+    /**
+     * Check if an ingredient is selected
+     * @param position
+     * @return
+     */
+    private boolean isIngredientSelected(int position) {
+
+        return (mIngredientList.get(position).getQuantity() != 0);
+
+    }
+
+
+
 
     /**
      * Custom adapter for displaying an array of ingredients.
@@ -106,18 +172,24 @@ public class SelectIngredientsActivity extends AppCompatActivity {
         }
 
         @Override
-        public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
+        public void onBindViewHolder(@NonNull final ViewHolder viewHolder, final int i) {
             Log.d(TAG, "onBindViewHolder: A new item is added to the list.");
 
             viewHolder.ingredientTitle.setText(mIngredientList.get(i).getTitle());
-            viewHolder.ingredientQuantity.setText(mIngredientList.get(i).getQuantity());
+            viewHolder.ingredientQuantity.setText(String.valueOf(mIngredientList.get(i).getQuantity()));
 
             viewHolder.parentLayout.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Log.d(TAG, "onClick: clicked on: " + mIngredientList.get(i).getTitle());
+                    Log.d(TAG, "onClick: clicked on: " + mIngredientList.get(i));
 
-                    Toast.makeText(mContext, mIngredientList.get(i).getTitle(), Toast.LENGTH_SHORT).show();
+                    // get EditText for clicked ingredient
+                    EditText ingredientQuantity = (EditText) v.findViewById(R.id.ingredient_quantity);
+
+                    // start fragment to ask for quantity
+                    initQuantityDialog(ingredientQuantity);
+
+                    mIngredientList.get(i).setQuantity(Integer.parseInt(ingredientQuantity.getText().toString()));
                 }
             });
         }
@@ -126,5 +198,39 @@ public class SelectIngredientsActivity extends AppCompatActivity {
         public int getItemCount() {
             return mIngredientList.size();
         }
+    }
+
+    private void initQuantityDialog(final EditText ingredientQuantity) {
+        final AlertDialog.Builder mBuilder = new AlertDialog.Builder(mContext);
+        View mView = getLayoutInflater().inflate(R.layout.dialog_ingredient_quantity, null);
+
+        final EditText mQuantity = (EditText) mView.findViewById(R.id.input_quantity);
+        Button mCancelButton = (Button) mView.findViewById(R.id.btn_cancel);
+        Button mDoneButton = (Button) mView.findViewById(R.id.btn_done);
+
+        mBuilder.setView(mView);
+        final AlertDialog dialog = mBuilder.create();
+        dialog.show();
+
+        mCancelButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialog.dismiss();
+            }
+        });
+
+        mDoneButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // check if input is integer and non-zero
+                if(!mQuantity.getText().equals("") && TextUtils.isDigitsOnly(mQuantity.getText()) && !mQuantity.getText().toString().equals("0")) {
+
+                    // set EditText to input
+                    ingredientQuantity.setText(mQuantity.getText().toString());
+                }
+
+                dialog.dismiss();
+            }
+        });
     }
 }

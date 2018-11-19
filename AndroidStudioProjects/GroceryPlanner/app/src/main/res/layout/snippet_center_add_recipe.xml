@@ -27,7 +27,7 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/name"
+                    android:id="@+id/recipe_name"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="40dp"
                     android:background="@null"
@@ -53,7 +53,7 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/description"
+                    android:id="@+id/recipe_description"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="40dp"
                     android:background="@null"
@@ -79,7 +79,7 @@
                 <EditText
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/website"
+                    android:id="@+id/recipe_website"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="40dp"
                     android:background="@null"
@@ -99,18 +99,27 @@
                 <ImageView
                     android:layout_width="35dp"
                     android:layout_height="35dp"
-                    android:src="@drawable/ic_description"
+                    android:src="@drawable/ic_ingredient_grey"
                     android:layout_centerVertical="true"/>
 
-                <EditText
-                    android:layout_width="match_parent"
+                <TextView
+                    android:layout_width="150dp"
                     android:layout_height="wrap_content"
-                    android:id="@+id/ingredients"
+                    android:id="@+id/ingredients_title"
+                    android:text="Ingredients"
                     android:layout_centerVertical="true"
                     android:layout_marginStart="40dp"
-                    android:background="@null"
-                    android:inputType="textNoSuggestions"
-                    android:hint="ingredients"/>
+                    android:textSize="17dp"
+                    android:textColor="@color/black" />
+
+                <ImageView
+                    android:layout_width="35dp"
+                    android:layout_height="35dp"
+                    android:id="@+id/add_ingredient_button"
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="15dp"
+                    android:src="@drawable/ic_add"
+                    android:layout_centerVertical="true"/>
 
 
             </RelativeLayout>
@@ -120,7 +129,9 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/relLayout4"
                 android:id="@+id/relLayout5"
-                android:layout_marginTop="15dp">
+                android:layout_marginTop="5dp"
+                android:paddingStart="10dp"
+                android:paddingEnd="10dp">
 
                 <ListView
                     android:layout_width="match_parent"
