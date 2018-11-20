@@ -142,6 +142,9 @@ public class SelectIngredientsActivity extends AppCompatActivity {
         private ArrayList<Ingredient> mIngredientList = new ArrayList<>();
         private Context mContext;
 
+        // vars
+        String inputQuantity;
+
         public SelectIngredientRvAdapter(Context mContext, ArrayList<Ingredient> ingredientList) {
             this.mIngredientList = ingredientList;
             this.mContext = mContext;
@@ -152,14 +155,14 @@ public class SelectIngredientsActivity extends AppCompatActivity {
             // widgets
             RelativeLayout parentLayout;
             TextView ingredientTitle;
-            EditText ingredientQuantity;
+            TextView ingredientQuantity;
 
             public ViewHolder(@NonNull View itemView) {
                 super(itemView);
 
                 parentLayout = (RelativeLayout) itemView.findViewById(R.id.parent_layout);
                 ingredientTitle = (TextView) itemView.findViewById(R.id.ingredient_title);
-                ingredientQuantity = (EditText) itemView.findViewById(R.id.ingredient_quantity);
+                ingredientQuantity = (TextView) itemView.findViewById(R.id.ingredient_quantity);
             }
         }
 
@@ -183,13 +186,12 @@ public class SelectIngredientsActivity extends AppCompatActivity {
                 public void onClick(View v) {
                     Log.d(TAG, "onClick: clicked on: " + mIngredientList.get(i));
 
-                    // get EditText for clicked ingredient
-                    EditText ingredientQuantity = (EditText) v.findViewById(R.id.ingredient_quantity);
+                    // get TextView Quantity for clicked ingredient
+                    TextView ingredientQuantity = (TextView) v.findViewById(R.id.ingredient_quantity);
 
                     // start fragment to ask for quantity
-                    initQuantityDialog(ingredientQuantity);
+                    initQuantityDialog(ingredientQuantity, i);
 
-                    mIngredientList.get(i).setQuantity(Integer.parseInt(ingredientQuantity.getText().toString()));
                 }
             });
         }
@@ -198,39 +200,51 @@ public class SelectIngredientsActivity extends AppCompatActivity {
         public int getItemCount() {
             return mIngredientList.size();
         }
-    }
 
-    private void initQuantityDialog(final EditText ingredientQuantity) {
-        final AlertDialog.Builder mBuilder = new AlertDialog.Builder(mContext);
-        View mView = getLayoutInflater().inflate(R.layout.dialog_ingredient_quantity, null);
+        private void initQuantityDialog(final TextView ingredientQuantity, final int i) {
+            final AlertDialog.Builder mBuilder = new AlertDialog.Builder(mContext);
+            View mView = getLayoutInflater().inflate(R.layout.dialog_ingredient_quantity, null);
 
-        final EditText mQuantity = (EditText) mView.findViewById(R.id.input_quantity);
-        Button mCancelButton = (Button) mView.findViewById(R.id.btn_cancel);
-        Button mDoneButton = (Button) mView.findViewById(R.id.btn_done);
+            final EditText mQuantity = (EditText) mView.findViewById(R.id.input_quantity);
+            Button mCancelButton = (Button) mView.findViewById(R.id.btn_cancel);
+            Button mDoneButton = (Button) mView.findViewById(R.id.btn_done);
 
-        mBuilder.setView(mView);
-        final AlertDialog dialog = mBuilder.create();
-        dialog.show();
+            mBuilder.setView(mView);
+            final AlertDialog dialog = mBuilder.create();
+            dialog.show();
 
-        mCancelButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                dialog.dismiss();
-            }
-        });
-
-        mDoneButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // check if input is integer and non-zero
-                if(!mQuantity.getText().equals("") && TextUtils.isDigitsOnly(mQuantity.getText()) && !mQuantity.getText().toString().equals("0")) {
-
-                    // set EditText to input
-                    ingredientQuantity.setText(mQuantity.getText().toString());
+            mCancelButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    dialog.dismiss();
                 }
+            });
 
-                dialog.dismiss();
-            }
-        });
+            mDoneButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    inputQuantity = mQuantity.getText().toString();
+                    // set inputQuantity to input
+                    if(!(inputQuantity == null) && !inputQuantity.equals("") && !inputQuantity.equals("0")) {
+
+                        // set TextView to inputQuantity
+                        ingredientQuantity.setText(inputQuantity);
+                        Log.d(TAG, "onClick: IngredientQuantity = " + ingredientQuantity.getText().toString());
+
+                        // set ingredient's quantity to inputQuantity
+                        mIngredientList.get(i).setQuantity(Integer.parseInt(inputQuantity));
+
+                        // check ingredient
+                        mIngredientList.get(i).setChecked(true);
+
+                    } 
+
+                    Log.d(TAG, "onClick: " + mIngredientList.get(i));
+
+                    dialog.dismiss();
+                }
+            });
+        }
     }
 }

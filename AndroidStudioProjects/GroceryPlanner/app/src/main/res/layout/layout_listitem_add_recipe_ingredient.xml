@@ -16,7 +16,7 @@
         android:layout_centerVertical="true"
         android:textSize="20sp" />
 
-    <EditText
+    <TextView
         android:id="@+id/ingredient_quantity"
         android:layout_width="match_parent"
         android:gravity="center"
@@ -24,6 +24,7 @@
         android:textColor="@color/black"
         android:layout_height="wrap_content"
         android:textSize="20sp"
+        android:inputType="number"
         android:layout_toRightOf="@+id/ingredient_title"/>
 
 </RelativeLayout>
