@@ -238,7 +238,15 @@ public class SelectIngredientsActivity extends AppCompatActivity {
                         // check ingredient
                         mIngredientList.get(i).setChecked(true);
 
-                    } 
+                    } else {
+                        ingredientQuantity.setText("0");
+
+                        // set ingredient's quantity to 0
+                        mIngredientList.get(i).setQuantity(0);
+
+                        // uncheck ingredient
+                        mIngredientList.get(i).setChecked(false);
+                    }
 
                     Log.d(TAG, "onClick: " + mIngredientList.get(i));
 
