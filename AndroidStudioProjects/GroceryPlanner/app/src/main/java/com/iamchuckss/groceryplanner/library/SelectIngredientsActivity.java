@@ -54,6 +54,8 @@ public class SelectIngredientsActivity extends AppCompatActivity {
         mBackButton = (ImageView) findViewById(R.id.backArrow);
         mDoneButton = (ImageView) findViewById(R.id.done_button);
 
+        initBackButton();
+        initDoneButton();
         initIngredients();
     }
 
@@ -76,10 +78,6 @@ public class SelectIngredientsActivity extends AppCompatActivity {
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
-    }
-
-    public void initQuantityBox() {
-
     }
 
     /**
@@ -108,11 +106,16 @@ public class SelectIngredientsActivity extends AppCompatActivity {
                         mSelectedIngredientsList.add(mIngredientList.get(i));
                     }
                 }
+                // TODO: check if result is correct
+                Log.d(TAG, "onClick: mSelectedIngredientList: " + mSelectedIngredientsList.toString());
 
-                // return result
-                Intent intent = new Intent();
-                intent.putExtra("selectedIngredients", (Serializable) mIngredientList);
-                setResult(RESULT_OK, intent);
+                // return result if valid
+                if(mSelectedIngredientsList.size() != 0) {
+                    Intent intent = new Intent();
+                    intent.putExtra("selectedIngredients", (Serializable) mIngredientList);
+                    setResult(RESULT_OK, intent);
+                }
+
                 finish();
             }
         });
