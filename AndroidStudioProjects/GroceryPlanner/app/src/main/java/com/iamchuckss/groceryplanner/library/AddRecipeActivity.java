@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -12,12 +14,18 @@ import android.widget.ImageView;
 import android.widget.ListView;
 
 import com.iamchuckss.groceryplanner.R;
+import com.iamchuckss.groceryplanner.models.Ingredient;
+import com.iamchuckss.groceryplanner.utils.AddRecipeIngredientsListRecyclerViewAdapter;
+
+import java.util.ArrayList;
 
 public class AddRecipeActivity extends AppCompatActivity {
 
     private static final String TAG = "AddRecipeActivity";
 
     Context mContext = AddRecipeActivity.this;
+
+    private ArrayList<Ingredient> mSelectedIngredientsList = new ArrayList<>();
     
     // constants
     private static final int SELECT_INGREDIENTS_REQUEST_CODE = 10;
@@ -26,7 +34,7 @@ public class AddRecipeActivity extends AppCompatActivity {
     EditText mRecipeName;
     EditText mRecipeDescription;
     EditText mRecipeWebsite;
-    ListView mIngredientsList;
+    RecyclerView mIngredientsList;
     ImageView mAddIngredientButton;
 
     @Override
@@ -38,7 +46,7 @@ public class AddRecipeActivity extends AppCompatActivity {
         mRecipeName = (EditText) findViewById(R.id.recipe_name);
         mRecipeDescription = (EditText) findViewById(R.id.recipe_description);
         mRecipeWebsite = (EditText) findViewById(R.id.recipe_website);
-        mIngredientsList = (ListView) findViewById(R.id.ingredientsList);
+        mIngredientsList = (RecyclerView) findViewById(R.id.ingredientsList);
         mAddIngredientButton = (ImageView) findViewById(R.id.add_ingredient_button);
 
         initAddIngredientButton();
@@ -57,11 +65,18 @@ public class AddRecipeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Log.d(TAG, "onClick: navigating to SelectIngredientsActivity");
-                // TODO: change to startActivityForResult
+                // TODO: Consider if mIngredientsList is not empty
                 Intent intent = new Intent(mContext, SelectIngredientsActivity.class);
                 startActivityForResult(intent, SELECT_INGREDIENTS_REQUEST_CODE);
             }
         });
+    }
+
+    private void initBackButton() {
+        // TODO: pop up dialog to confirm
+    }
+
+    private void initSaveButton() {
     }
 
     @Override
@@ -72,8 +87,21 @@ public class AddRecipeActivity extends AppCompatActivity {
             Log.d(TAG, "onActivityResult: done selecting ingredients ");
             if(resultCode == RESULT_OK) {
                 Log.d(TAG, "onActivityResult: result is valid");
+                mSelectedIngredientsList = (ArrayList) (data.getSerializableExtra("selectedIngredients"));
+                Log.d(TAG, "onActivityResult: Selected ingredients: " + mSelectedIngredientsList);
                 // adapt ingredients onto mIngredientsList
+                refreshIngredientsListRecyclerView();
             }
         }
+    }
+
+    private void refreshIngredientsListRecyclerView() {
+        Log.d(TAG, "initIngredientsListRecyclerView: init recyclerView");
+
+        AddRecipeIngredientsListRecyclerViewAdapter adapter = new AddRecipeIngredientsListRecyclerViewAdapter(
+                mContext, mSelectedIngredientsList);
+
+        mIngredientsList.setAdapter(adapter);
+        mIngredientsList.setLayoutManager(new LinearLayoutManager(mContext));
     }
 }

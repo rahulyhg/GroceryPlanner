@@ -112,7 +112,7 @@ public class SelectIngredientsActivity extends AppCompatActivity {
                 // return result if valid
                 if(mSelectedIngredientsList.size() != 0) {
                     Intent intent = new Intent();
-                    intent.putExtra("selectedIngredients", (Serializable) mIngredientList);
+                    intent.putExtra("selectedIngredients", (Serializable) mSelectedIngredientsList);
                     setResult(RESULT_OK, intent);
                 }
 
