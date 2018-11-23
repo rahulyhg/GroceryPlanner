@@ -106,7 +106,6 @@ public class SelectIngredientsActivity extends AppCompatActivity {
                         mSelectedIngredientsList.add(mIngredientList.get(i));
                     }
                 }
-                // TODO: check if result is correct
                 Log.d(TAG, "onClick: mSelectedIngredientList: " + mSelectedIngredientsList.toString());
 
                 // return result if valid
