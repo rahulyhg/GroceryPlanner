@@ -8,12 +8,22 @@ public class Recipe {
     String description;
     String website;
     ArrayList<Ingredient> ingredients;
+    boolean checked;
 
-    public Recipe(String title, String description, String website, ArrayList<Ingredient> ingredients) {
+    public Recipe(String title, String description, String website, ArrayList<Ingredient> ingredients, boolean checked) {
         this.title = title;
         this.description = description;
         this.website = website;
         this.ingredients = ingredients;
+        this.checked = checked;
+    }
+
+    public boolean isChecked() {
+        return checked;
+    }
+
+    public void setChecked(boolean checked) {
+        this.checked = checked;
     }
 
     public String getTitle() {
@@ -55,6 +65,7 @@ public class Recipe {
                 ", description='" + description + '\'' +
                 ", website='" + website + '\'' +
                 ", ingredients=" + ingredients +
+                ", checked=" + checked +
                 '}';
     }
 }
