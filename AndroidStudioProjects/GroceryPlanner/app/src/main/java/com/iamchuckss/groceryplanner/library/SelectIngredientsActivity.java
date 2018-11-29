@@ -9,7 +9,6 @@ import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,14 +18,12 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.iamchuckss.groceryplanner.R;
 import com.iamchuckss.groceryplanner.models.Ingredient;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 public class SelectIngredientsActivity extends AppCompatActivity {
 
@@ -56,11 +53,13 @@ public class SelectIngredientsActivity extends AppCompatActivity {
 
         initBackButton();
         initDoneButton();
-        initIngredients();
+        populateIngredientList();
     }
 
-    private void initIngredients() {
-        Log.d(TAG, "initIngredients: preparing recipes.");
+    private void populateIngredientList() {
+        Log.d(TAG, "populateIngredientList: preparing recipes.");
+
+        // TODO: get list of ingredients from database
 
         mIngredientList.add(new Ingredient("Curry Powder"));
         mIngredientList.add(new Ingredient("Cumin Powder"));

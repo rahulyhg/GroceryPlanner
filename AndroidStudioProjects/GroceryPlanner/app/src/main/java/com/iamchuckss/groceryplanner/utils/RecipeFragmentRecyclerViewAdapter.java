@@ -12,6 +12,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.iamchuckss.groceryplanner.R;
+import com.iamchuckss.groceryplanner.models.Ingredient;
+import com.iamchuckss.groceryplanner.models.Recipe;
 
 import java.util.ArrayList;
 
@@ -19,15 +21,11 @@ public class RecipeFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Reci
 
     private static final String TAG = "RecipeFragmentRvAdapter";
 
-    private ArrayList<String> mRecipeTitles = new ArrayList<>();
-    private ArrayList<String> mRecipeDetails1 = new ArrayList<>();
-    private ArrayList<String> mRecipeDetails2 = new ArrayList<>();
+    private ArrayList<Recipe> mRecipeList = new ArrayList<>();
     private Context mContext;
 
-    public RecipeFragmentRecyclerViewAdapter(Context mContext, ArrayList<String> mRecipeTitles, ArrayList<String> mRecipeDetails1, ArrayList<String> mRecipeDetails2) {
-        this.mRecipeTitles = mRecipeTitles;
-        this.mRecipeDetails1 = mRecipeDetails1;
-        this.mRecipeDetails2 = mRecipeDetails2;
+    public RecipeFragmentRecyclerViewAdapter(ArrayList<Recipe> mRecipeList, Context mContext) {
+        this.mRecipeList = mRecipeList;
         this.mContext = mContext;
     }
 
@@ -35,15 +33,15 @@ public class RecipeFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Reci
 
         // widgets
         RelativeLayout parentLayout;
-        TextView recipeTitle, recipeDetails1, recipeDetails2;
+        TextView recipeTitle, recipeWebsite, recipeIngredients;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             parentLayout = (RelativeLayout) itemView.findViewById(R.id.parent_layout);
             recipeTitle = (TextView) itemView.findViewById(R.id.recipe_title);
-            recipeDetails1 = (TextView) itemView.findViewById(R.id.recipe_details1);
-            recipeDetails2 = (TextView) itemView.findViewById(R.id.recipe_details2);
+            recipeWebsite = (TextView) itemView.findViewById(R.id.recipe_website);
+            recipeIngredients = (TextView) itemView.findViewById(R.id.recipe_ingredients);
         }
     }
 
@@ -59,22 +57,32 @@ public class RecipeFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Reci
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
         Log.d(TAG, "onBindViewHolder: A new item is added to the list.");
 
-        viewHolder.recipeTitle.setText(mRecipeTitles.get(i));
-        viewHolder.recipeDetails1.setText(mRecipeDetails1.get(i));
-        viewHolder.recipeDetails2.setText(mRecipeDetails2.get(i));
+        viewHolder.recipeTitle.setText(mRecipeList.get(i).getTitle()); // set recipe title
+        viewHolder.recipeWebsite.setText(mRecipeList.get(i).getWebsite()); // set recipe website
+
+        // retrive recipe ingredients
+        ArrayList<Ingredient> recipeIngredients = mRecipeList.get(i).getIngredients();
+        ArrayList<String> recipeIngredientsTitles = new ArrayList<>();
+        for(Ingredient ingredient : recipeIngredients) {
+            // get all ingredients' title
+            recipeIngredientsTitles.add(ingredient.getTitle());
+        }
+
+        // set recipe ingredients
+        viewHolder.recipeIngredients.setText(StringManipulation.arrayToString(recipeIngredientsTitles));
 
         viewHolder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: clicked on: " + mRecipeTitles.get(i));
+                Log.d(TAG, "onClick: clicked on: " + mRecipeList.get(i));
 
-                Toast.makeText(mContext, mRecipeTitles.get(i), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, mRecipeList.get(i).getTitle(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return mRecipeTitles.size();
+        return mRecipeList.size();
     }
 }

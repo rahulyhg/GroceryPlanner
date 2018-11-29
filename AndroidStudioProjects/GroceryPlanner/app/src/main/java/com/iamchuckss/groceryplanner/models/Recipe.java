@@ -5,17 +5,15 @@ import java.util.ArrayList;
 public class Recipe {
 
     String title;
-    String description;
     String website;
     ArrayList<Ingredient> ingredients;
     boolean checked;
 
-    public Recipe(String title, String description, String website, ArrayList<Ingredient> ingredients, boolean checked) {
+    public Recipe(String title, String website, ArrayList<Ingredient> ingredients) {
         this.title = title;
-        this.description = description;
         this.website = website;
         this.ingredients = ingredients;
-        this.checked = checked;
+        checked = false;
     }
 
     public boolean isChecked() {
@@ -32,14 +30,6 @@ public class Recipe {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
     }
 
     public String getWebsite() {
@@ -62,7 +52,6 @@ public class Recipe {
     public String toString() {
         return "Recipe{" +
                 "title='" + title + '\'' +
-                ", description='" + description + '\'' +
                 ", website='" + website + '\'' +
                 ", ingredients=" + ingredients +
                 ", checked=" + checked +

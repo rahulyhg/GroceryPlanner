@@ -1,6 +1,8 @@
 package com.iamchuckss.groceryplanner.utils;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -16,6 +18,7 @@ import android.widget.Toast;
 
 import com.iamchuckss.groceryplanner.R;
 import com.iamchuckss.groceryplanner.models.Recipe;
+import com.iamchuckss.groceryplanner.plan.SelectRecipeActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,11 +28,15 @@ public class PlanActivityRecyclerViewAdapter extends RecyclerView.Adapter<PlanAc
 
     private static final String TAG = "PlanActivityRecyclerVie";
 
+    private static final int SELECT_RECIPE_REQUEST_CODE = 11;
+
     private Context mContext;
+    private Activity mActivity;
     private TreeMap<Integer, ArrayList<Recipe>> mRecipeList;
 
-    public PlanActivityRecyclerViewAdapter(Context mContext, TreeMap<Integer, ArrayList<Recipe>> mRecipeList) {
+    public PlanActivityRecyclerViewAdapter(Context mContext, Activity mActivity, TreeMap<Integer, ArrayList<Recipe>> mRecipeList) {
         this.mContext = mContext;
+        this.mActivity = mActivity;
         this.mRecipeList = mRecipeList;
     }
 
@@ -83,9 +90,11 @@ public class PlanActivityRecyclerViewAdapter extends RecyclerView.Adapter<PlanAc
                 Log.d(TAG, "onClick: clicked on: " + Days.getString(getTreeMapKeyFromIndex(i)));
 
                 // start select recipes activity
+                // TODO: consider if selectedRecipes is not empty -> send data over intent
+                Intent intent = new Intent(mContext, SelectRecipeActivity.class);
+                mActivity.startActivityForResult(intent, SELECT_RECIPE_REQUEST_CODE);
 
-                Toast.makeText(mContext, Days.getString(getTreeMapKeyFromIndex(i)),
-                        Toast.LENGTH_SHORT).show();
+                Log.d(TAG, "onClick: navigating to SelectRecipeActivity");
             }
         });
     }

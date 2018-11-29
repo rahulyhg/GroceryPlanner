@@ -1,6 +1,7 @@
 package com.iamchuckss.groceryplanner.plan;
 
 import android.content.Context;
+import android.content.Intent;
 import android.media.Image;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -57,7 +58,7 @@ public class PlanActivity extends AppCompatActivity{
 
     private void initRecyclerView() {
         initRecipeList();
-        PlanActivityRecyclerViewAdapter adapter = new PlanActivityRecyclerViewAdapter(mContext,
+        PlanActivityRecyclerViewAdapter adapter = new PlanActivityRecyclerViewAdapter(mContext, this,
                 mRecipeList);
 
         mRecyclerView.setAdapter(adapter);
@@ -96,6 +97,11 @@ public class PlanActivity extends AppCompatActivity{
                 popup.show();
             }
         });
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
     }
 
     /**

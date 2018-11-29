@@ -14,6 +14,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.iamchuckss.groceryplanner.R;
+import com.iamchuckss.groceryplanner.models.Ingredient;
+import com.iamchuckss.groceryplanner.models.Recipe;
 import com.iamchuckss.groceryplanner.utils.RecipeFragmentRecyclerViewAdapter;
 
 import java.util.ArrayList;
@@ -24,9 +26,7 @@ public class RecipeFragment extends Fragment {
     private static final String TAG = "RecipeFragment";
 
     // vars
-    private ArrayList<String> mRecipeTitles = new ArrayList<>();
-    private ArrayList<String> mRecipeDetails1 = new ArrayList<>();
-    private ArrayList<String> mRecipeDetails2 = new ArrayList<>();
+    private ArrayList<Recipe> mRecipeList = new ArrayList<>();
 
     Context mContext = getActivity();
 
@@ -53,25 +53,16 @@ public class RecipeFragment extends Fragment {
     private void initRecipes() {
         Log.d(TAG, "initRecipes: preparing recipes.");
 
-        mRecipeTitles.add("Curry");
-        mRecipeDetails1.add("Chinese Curry");
-        mRecipeDetails2.add("Delicious Chinese Curry");
+        ArrayList<Ingredient> ingredientList = new ArrayList<>();
+        ingredientList.add(new Ingredient("Cumin"));
+        ingredientList.add(new Ingredient("Curry"));
 
-        mRecipeTitles.add("Curry1");
-        mRecipeDetails1.add("Indian Curry");
-        mRecipeDetails2.add("Delicious Indian Curry");
-
-        mRecipeTitles.add("Curry2");
-        mRecipeDetails1.add("Chicken Tikka Masala Curry");
-        mRecipeDetails2.add("Delicious Chicken Tikka Masala Curry");
-
-        mRecipeTitles.add("Curry3");
-        mRecipeDetails1.add("Chicken Korma Curry");
-        mRecipeDetails2.add("Delicious Chicken Korma Curry");
-
-        mRecipeTitles.add("Curry4");
-        mRecipeDetails1.add("Rendang Curry");
-        mRecipeDetails2.add("Delicious Rendang Curry");
+        mRecipeList.add(new Recipe("Curry", "www.curry.com", ingredientList));
+        mRecipeList.add(new Recipe("Curry1", "www.curry.com", ingredientList));
+        mRecipeList.add(new Recipe("Curry2", "www.curry.com", ingredientList));
+        mRecipeList.add(new Recipe("Curry3", "www.curry.com", ingredientList));
+        mRecipeList.add(new Recipe("Curry4", "www.curry.com", new ArrayList<Ingredient>()));
+        mRecipeList.add(new Recipe("Curry5", "www.curry.com", ingredientList));
 
         initRecyclerView();
     }
@@ -79,7 +70,7 @@ public class RecipeFragment extends Fragment {
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: init recyclerview");
 
-        RecipeFragmentRecyclerViewAdapter adapter = new RecipeFragmentRecyclerViewAdapter(mContext, mRecipeTitles, mRecipeDetails1, mRecipeDetails2);
+        RecipeFragmentRecyclerViewAdapter adapter = new RecipeFragmentRecyclerViewAdapter(mRecipeList, mContext);
 
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
