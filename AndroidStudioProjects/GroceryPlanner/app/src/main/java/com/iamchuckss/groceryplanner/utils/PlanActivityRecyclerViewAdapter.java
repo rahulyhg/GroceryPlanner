@@ -45,23 +45,23 @@ public class PlanActivityRecyclerViewAdapter extends RecyclerView.Adapter<PlanAc
         // widgets
         RelativeLayout mParentLayout;
         TextView mDayTitle;
-        ListView mRecipeList;
+        TextView mRecipeList;
 
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
 
             mParentLayout = (RelativeLayout) itemView.findViewById(R.id.parent_layout);
             mDayTitle = (TextView) itemView.findViewById(R.id.day_title);
-            mRecipeList = (ListView) itemView.findViewById(R.id.recipe_list);
+            mRecipeList = (TextView) itemView.findViewById(R.id.recipe_list);
         }
 
-        public void updateRecipeList(ArrayList<Recipe> recipeList) {
-            Log.d(TAG, "updateRecipeList: refresh listview");
+        public void initRecipeList(ArrayList<String> recipesTitleList) {
+            Log.d(TAG, "initRecipeList: initializing mRecipeList");
 
-            ListAdapter recipeListAdapter = new ArrayAdapter<Recipe>(mContext, android.R.layout.simple_list_item_1,
-                    recipeList);
-
-            mRecipeList.setAdapter(recipeListAdapter);
+            for(String recipeTitle : recipesTitleList) {
+                mRecipeList.append(recipeTitle);
+                mRecipeList.append("\n");
+            }
         }
     }
 
@@ -78,11 +78,17 @@ public class PlanActivityRecyclerViewAdapter extends RecyclerView.Adapter<PlanAc
         Log.d(TAG, "onBindViewHolder: A new item is added to the list.");
 
         // obtain day and list of selected recipes from map
-        int day = getTreeMapKeyFromIndex(i);
-        ArrayList<Recipe> selectedRecipes = mRecipeList.get(day);
+        final int day = getTreeMapKeyFromIndex(i);
+        final ArrayList<Recipe> selectedRecipes = mRecipeList.get(day);
+
+        ArrayList<String> selectedRecipesTitles = new ArrayList<>();
+        // get recipes' title from list
+        for(Recipe recipe : selectedRecipes) {
+            selectedRecipesTitles.add(recipe.getTitle());
+        }
 
         viewHolder.mDayTitle.setText(Days.getString(day));
-        viewHolder.updateRecipeList(selectedRecipes);
+        viewHolder.initRecipeList(selectedRecipesTitles);
 
         viewHolder.mParentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -92,6 +98,8 @@ public class PlanActivityRecyclerViewAdapter extends RecyclerView.Adapter<PlanAc
                 // start select recipes activity
                 // TODO: consider if selectedRecipes is not empty -> send data over intent
                 Intent intent = new Intent(mContext, SelectRecipeActivity.class);
+                intent.putExtra("currentDay", day);
+                intent.putExtra("currentSelectedRecipes", selectedRecipes);
                 mActivity.startActivityForResult(intent, SELECT_RECIPE_REQUEST_CODE);
 
                 Log.d(TAG, "onClick: navigating to SelectRecipeActivity");

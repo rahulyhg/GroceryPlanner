@@ -1,8 +1,9 @@
 package com.iamchuckss.groceryplanner.models;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
-public class Recipe {
+public class Recipe implements Serializable{
 
     String title;
     String website;

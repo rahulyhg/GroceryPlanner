@@ -22,6 +22,7 @@
         <activity android:name="com.iamchuckss.groceryplanner.login.LoginActivity"></activity>
         <activity android:name="com.iamchuckss.groceryplanner.library.AddRecipeActivity"></activity>
         <activity android:name="com.iamchuckss.groceryplanner.library.SelectIngredientsActivity"></activity>
+        <activity android:name="com.iamchuckss.groceryplanner.plan.SelectRecipeActivity"></activity>
     </application>
 
 </manifest>

@@ -2,7 +2,7 @@ package com.iamchuckss.groceryplanner.utils;
 
 public class Days {
 
-    public static final int MONDAY = 0;
+    public static final int MONDAY = 1;
     public static final int TUESDAY = 1;
     public static final int WEDNESDAY = 2;
     public static final int THURSDAY = 3;

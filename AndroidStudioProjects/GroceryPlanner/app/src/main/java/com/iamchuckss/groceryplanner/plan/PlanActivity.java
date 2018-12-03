@@ -17,12 +17,15 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.PopupMenu;
+import android.widget.TextView;
 
 import com.iamchuckss.groceryplanner.R;
 import com.iamchuckss.groceryplanner.models.Recipe;
 import com.iamchuckss.groceryplanner.utils.BottomNavigationViewHelper;
 import com.iamchuckss.groceryplanner.utils.PlanActivityRecyclerViewAdapter;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.TreeMap;
@@ -31,6 +34,7 @@ public class PlanActivity extends AppCompatActivity{
 
     private static final String TAG = "PlanActivity";
     private static final int ACTIVITY_NUM = 1;
+    private static final int SELECT_RECIPE_REQUEST_CODE = 11;
 
     // vars
     TreeMap<Integer, ArrayList<Recipe>> mRecipeList = new TreeMap<>();
@@ -38,6 +42,7 @@ public class PlanActivity extends AppCompatActivity{
 
     // widgets
     RecyclerView mRecyclerView;
+    PlanActivityRecyclerViewAdapter mAdapter;
     Toolbar mToolbar;
     ImageView mOptionButton;
 
@@ -58,10 +63,10 @@ public class PlanActivity extends AppCompatActivity{
 
     private void initRecyclerView() {
         initRecipeList();
-        PlanActivityRecyclerViewAdapter adapter = new PlanActivityRecyclerViewAdapter(mContext, this,
+        mAdapter = new PlanActivityRecyclerViewAdapter(mContext, this,
                 mRecipeList);
 
-        mRecyclerView.setAdapter(adapter);
+        mRecyclerView.setAdapter(mAdapter);
         mRecyclerView.setLayoutManager(new LinearLayoutManager(mContext));
     }
 
@@ -102,6 +107,45 @@ public class PlanActivity extends AppCompatActivity{
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
+
+        if(requestCode == SELECT_RECIPE_REQUEST_CODE) {
+            Log.d(TAG, "onActivityResult: done selecting ingredients ");
+            if(resultCode == RESULT_OK) {
+                Log.d(TAG, "onActivityResult: result is valid");
+
+                // get which day
+                int currentDay = data.getIntExtra("currentDay", 10);
+                ArrayList<Recipe> selectedRecipeList = (ArrayList) (data.getSerializableExtra("selectedRecipes"));
+
+                // get selected recipes list
+                if(currentDay >= 0 && currentDay <= 6 && (selectedRecipeList != null)) {
+                    mRecipeList.put(currentDay, selectedRecipeList);
+                    Log.d(TAG, "onActivityResult: Selected recipes: " + selectedRecipeList.toString());
+
+                    // adapt recipes onto mRecipeList
+                    updateRecipeList(currentDay, selectedRecipeList);
+                }
+            }
+        }
+    }
+
+    public void updateRecipeList(int pos, ArrayList<Recipe> selectedRecipes) {
+        RecyclerView.ViewHolder viewHolder = mRecyclerView.findViewHolderForAdapterPosition(pos);
+        View view = viewHolder.itemView;
+        TextView recipeList = (TextView) view.findViewById(R.id.recipe_list);
+
+        ArrayList<String> selectedRecipesTitles = new ArrayList<>();
+        // get recipes' title from list
+        for(Recipe recipe : selectedRecipes) {
+            selectedRecipesTitles.add(recipe.getTitle());
+        }
+
+        recipeList.setText("");
+
+        for(String recipeTitle : selectedRecipesTitles) {
+            recipeList.append(recipeTitle);
+            recipeList.append("\n");
+        }
     }
 
     /**

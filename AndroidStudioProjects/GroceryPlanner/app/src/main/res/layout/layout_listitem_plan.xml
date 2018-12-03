@@ -18,13 +18,19 @@
             android:layout_alignParentTop="true"
             android:layout_alignParentLeft="true" />
 
-        <ListView
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:id="@+id/recipe_list"
-            android:layout_below="@+id/day_title">
+            android:layout_below="@+id/day_title"
+            android:orientation="vertical"
+            android:animateLayoutChanges="true">
 
-        </ListView>
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/recipe_list"/>
+
+        </LinearLayout>
 
 
 
