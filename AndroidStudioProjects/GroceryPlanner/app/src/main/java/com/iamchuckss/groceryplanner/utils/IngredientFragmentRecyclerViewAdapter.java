@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.iamchuckss.groceryplanner.R;
+import com.iamchuckss.groceryplanner.models.Ingredient;
 
 import java.util.ArrayList;
 
@@ -19,11 +20,11 @@ public class IngredientFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
 
     private static final String TAG = "IngredientFragRvAdapter";
 
-    private ArrayList<String> mIngredientTitles = new ArrayList<>();
+    private ArrayList<Ingredient> mIngredientsList = new ArrayList<>();
     private Context mContext;
 
-    public IngredientFragmentRecyclerViewAdapter(Context mContext, ArrayList<String> ingredientTitles) {
-        this.mIngredientTitles = ingredientTitles;
+    public IngredientFragmentRecyclerViewAdapter(ArrayList<Ingredient> mIngredientsList, Context mContext) {
+        this.mIngredientsList = mIngredientsList;
         this.mContext = mContext;
     }
 
@@ -53,20 +54,20 @@ public class IngredientFragmentRecyclerViewAdapter extends RecyclerView.Adapter<
     public void onBindViewHolder(@NonNull ViewHolder viewHolder, final int i) {
         Log.d(TAG, "onBindViewHolder: A new item is added to the list.");
 
-        viewHolder.ingredientTitle.setText(mIngredientTitles.get(i));
+        viewHolder.ingredientTitle.setText(mIngredientsList.get(i).getTitle());
 
         viewHolder.parentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Log.d(TAG, "onClick: clicked on: " + mIngredientTitles.get(i));
+                Log.d(TAG, "onClick: clicked on: " + mIngredientsList.get(i).getTitle());
 
-                Toast.makeText(mContext, mIngredientTitles.get(i), Toast.LENGTH_SHORT).show();
+                Toast.makeText(mContext, mIngredientsList.get(i).getTitle(), Toast.LENGTH_SHORT).show();
             }
         });
     }
 
     @Override
     public int getItemCount() {
-        return mIngredientTitles.size();
+        return mIngredientsList.size();
     }
 }

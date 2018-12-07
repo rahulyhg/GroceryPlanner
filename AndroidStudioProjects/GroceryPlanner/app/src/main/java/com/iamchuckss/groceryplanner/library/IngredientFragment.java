@@ -18,6 +18,7 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.iamchuckss.groceryplanner.R;
+import com.iamchuckss.groceryplanner.models.Ingredient;
 import com.iamchuckss.groceryplanner.utils.IngredientFragmentRecyclerViewAdapter;
 import com.iamchuckss.groceryplanner.utils.RecipeFragmentRecyclerViewAdapter;
 
@@ -29,7 +30,7 @@ public class IngredientFragment extends Fragment {
     private static final String TAG = "IngredientFragment";
 
     // vars
-    private ArrayList<String> mIngredientTitles = new ArrayList<>();
+    private ArrayList<Ingredient> mIngredientsList = new ArrayList<>();
 
     Context mContext;
 
@@ -56,17 +57,14 @@ public class IngredientFragment extends Fragment {
     }
 
     private void initIngredients() {
-        Log.d(TAG, "initIngredients: preparing recipes.");
+        Log.d(TAG, "populateIngredientList: preparing recipes.");
 
-        mIngredientTitles.add("Curry Powder");
+        // TODO: get list of ingredients from database
 
-        mIngredientTitles.add("Coriander Powder");
-
-        mIngredientTitles.add("Cumin Powder");
-
-        mIngredientTitles.add("Mustard seeds");
-
-        mIngredientTitles.add("Garam Masala");
+        mIngredientsList.add(new Ingredient("Curry Powder"));
+        mIngredientsList.add(new Ingredient("Cumin Powder"));
+        mIngredientsList.add(new Ingredient("Coriander"));
+        mIngredientsList.add(new Ingredient("Mustard Seeds"));
 
         initRecyclerView();
     }
@@ -75,7 +73,7 @@ public class IngredientFragment extends Fragment {
         Log.d(TAG, "initRecyclerView: init recyclerview");
 
         mAdapter = new IngredientFragmentRecyclerViewAdapter(
-                mContext, mIngredientTitles);
+                mIngredientsList, mContext);
 
         recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
@@ -119,15 +117,13 @@ public class IngredientFragment extends Fragment {
                 // set inputQuantity to input
                 if(!(userInput == null) && !userInput.equals("") && !userInput.equals(" ")) {
 
-                    mIngredientTitles.add(userInput);
+                    mIngredientsList.add(new Ingredient(userInput));
                     // TODO: add new ingredient to database
-                    mAdapter.notifyItemInserted(mIngredientTitles.size() - 1);
+                    mAdapter.notifyItemInserted(mIngredientsList.size() - 1);
                 }
 
                 dialog.dismiss();
             }
         });
     }
-
-
 }
