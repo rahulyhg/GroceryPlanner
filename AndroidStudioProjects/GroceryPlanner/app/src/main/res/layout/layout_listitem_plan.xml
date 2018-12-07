@@ -16,7 +16,8 @@
             android:layout_height="wrap_content"
             android:textSize="20sp"
             android:layout_alignParentTop="true"
-            android:layout_alignParentLeft="true" />
+            android:layout_alignParentLeft="true"
+            android:clickable="false"/>
 
         <LinearLayout
             android:layout_width="match_parent"

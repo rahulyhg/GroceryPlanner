@@ -130,6 +130,7 @@ public class PlanActivity extends AppCompatActivity{
     }
 
     public void updateRecipeList(int pos, ArrayList<Recipe> selectedRecipes) {
+        // get ViewHolder for selected day
         RecyclerView.ViewHolder viewHolder = mRecyclerView.findViewHolderForAdapterPosition(pos);
         View view = viewHolder.itemView;
         TextView recipeList = (TextView) view.findViewById(R.id.recipe_list);

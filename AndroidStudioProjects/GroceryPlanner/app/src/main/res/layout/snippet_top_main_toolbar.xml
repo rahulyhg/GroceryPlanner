@@ -7,7 +7,7 @@
     android:background="@drawable/white_grey_border_bottom">
 
     <android.support.v7.widget.Toolbar
-        android:id="@+id/plan_toolbar"
+        android:id="@+id/main_toolbar"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
@@ -21,12 +21,12 @@
                 android:layout_width="230dp"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:text="Meal Plan for the Week"
+                android:text="Grocery List"
                 android:textSize="20dp"
                 android:textColor="@color/black"
                 android:textStyle="bold"
                 android:layout_marginStart="5dp"
-                android:id="@+id/select_ingredient_toolbar" />
+                android:id="@+id/main_toolbar_title" />
 
             <ImageView
                 android:layout_width="25dp"
