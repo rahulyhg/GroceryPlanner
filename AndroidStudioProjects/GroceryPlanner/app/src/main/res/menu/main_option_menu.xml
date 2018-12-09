@@ -6,4 +6,9 @@
         android:title="Clear Plan"
         app:showAsAction="never"/>
 
+    <item
+        android:id="@+id/sign_out"
+        android:title="Sign Out"
+        app:showAsAction="never"/>
+
 </menu>
