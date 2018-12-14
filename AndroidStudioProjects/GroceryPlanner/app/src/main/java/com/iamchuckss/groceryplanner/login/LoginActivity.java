@@ -93,9 +93,16 @@ public class LoginActivity extends AppCompatActivity {
                                         FirebaseUser user = mAuth.getCurrentUser();
 
                                         try {
-                                            Log.d(TAG, "onComplete: succcess. email is verified.");
-                                            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-                                            startActivity(intent);
+                                            if(user.isEmailVerified()) {
+                                                Log.d(TAG, "onComplete: succcess. email is verified.");
+                                                Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+                                                startActivity(intent);
+                                            } else {
+                                                Toast.makeText(mContext, "Email not verified \n check your email inbox.", Toast.LENGTH_SHORT).show();
+                                                mProgressBar.setVisibility(View.GONE);
+                                                mPleaseWait.setVisibility(View.GONE);
+                                                mAuth.signOut();
+                                            }
                                         } catch (NullPointerException e) {
                                             Log.d(TAG, "onComplete: NullPointerException: " + e.getMessage());
                                         }
