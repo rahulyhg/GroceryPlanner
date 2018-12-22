@@ -72,10 +72,10 @@ public class MainActivity extends AppCompatActivity {
 
         // TODO: get list of ingredients from database
 
-        mIngredientsList.add(new Ingredient("Curry Powder"));
-        mIngredientsList.add(new Ingredient("Cumin Powder"));
-        mIngredientsList.add(new Ingredient("Coriander"));
-        mIngredientsList.add(new Ingredient("Mustard Seeds"));
+        mIngredientsList.add(new Ingredient("recipe1", "Curry Powder"));
+//        mIngredientsList.add(new Ingredient("Cumin Powder"));
+//        mIngredientsList.add(new Ingredient("Coriander"));
+//        mIngredientsList.add(new Ingredient("Mustard Seeds"));
     }
 
     private void initOptionButton() {
@@ -117,7 +117,9 @@ public class MainActivity extends AppCompatActivity {
         Menu menu = bottomNavigationViewEx.getMenu();
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
-    }/*
+    }
+
+    /*
     -----------------------------------Firebase-----------------------------------------------
      */
 

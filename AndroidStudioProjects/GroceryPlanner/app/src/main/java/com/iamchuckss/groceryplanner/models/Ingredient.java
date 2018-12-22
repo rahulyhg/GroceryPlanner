@@ -7,14 +7,27 @@ import java.io.Serializable;
 
 public class Ingredient implements Serializable{
 
+    private String ingredient_id;
     private String title;
     private Integer quantity;
     private boolean checked;
 
-    public Ingredient(String title) {
+    public Ingredient(String ingredient_id, String title) {
+        this.ingredient_id = ingredient_id;
         this.title = title;
         this.quantity = 0;
         this.checked = false;
+    }
+
+    public Ingredient() {
+    }
+
+    public String getIngredient_id() {
+        return ingredient_id;
+    }
+
+    public void setIngredient_id(String ingredient_id) {
+        this.ingredient_id = ingredient_id;
     }
 
     public String getTitle() {
@@ -32,7 +45,8 @@ public class Ingredient implements Serializable{
     @Override
     public String toString() {
         return "Ingredient{" +
-                "title='" + title + '\'' +
+                "ingredient_id='" + ingredient_id + '\'' +
+                ", title='" + title + '\'' +
                 ", quantity=" + quantity +
                 ", checked=" + checked +
                 '}';

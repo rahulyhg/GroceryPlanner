@@ -54,8 +54,8 @@ public class RecipeFragment extends Fragment {
         Log.d(TAG, "initRecipes: preparing recipes.");
 
         ArrayList<Ingredient> ingredientList = new ArrayList<>();
-        ingredientList.add(new Ingredient("Cumin"));
-        ingredientList.add(new Ingredient("Curry"));
+        ingredientList.add(new Ingredient("recipe1", "Cumin"));
+        ingredientList.add(new Ingredient("recipe2", "Curry"));
 
         mRecipeList.add(new Recipe("Curry", "www.curry.com", ingredientList));
         mRecipeList.add(new Recipe("Curry1", "www.curry.com", ingredientList));

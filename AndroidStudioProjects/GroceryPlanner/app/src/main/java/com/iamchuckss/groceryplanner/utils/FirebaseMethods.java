@@ -10,11 +10,16 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
+import com.google.firebase.database.ValueEventListener;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.iamchuckss.groceryplanner.R;
+import com.iamchuckss.groceryplanner.models.Ingredient;
 import com.iamchuckss.groceryplanner.models.User;
 
 public class FirebaseMethods {
@@ -105,5 +110,62 @@ public class FirebaseMethods {
         myRef.child(mContext.getString(R.string.dbname_users))
                 .child(userID)
                 .setValue(user);
+    }
+
+    /**
+     * Add new ingredient to the user_ingredients node
+     *
+      * @param title
+     * @return ingredient_id of added ingredient
+     */
+    public String addNewIngredient(String title) {
+
+        Log.d(TAG, "addNewIngredient: adding new ingredient: " + title);
+
+        // push to create new entry
+        DatabaseReference newRef = myRef.child(mContext.getString(R.string.db_name_user_ingredients))
+                .child(userID)
+                .push();
+
+        // insert new ingredient
+        newRef.setValue(new Ingredient(newRef.getKey(), title));
+
+        return newRef.getKey();
+    }
+
+    /**
+     * Retrieve ingredient from database
+     *
+     * @param title
+     */
+    public void getIngredient(String title, final firebaseCallback<Ingredient> callback) {
+
+        final Query query = myRef.child(mContext.getString(R.string.db_name_user_ingredients))
+                .child(userID)
+                .orderByChild(mContext.getString(R.string.field_ingredient_title))
+                .equalTo(title);
+
+        // return a datasnapshot only if a match is found
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    for(DataSnapshot singleSnapshot: dataSnapshot.getChildren()) {
+
+                        callback.onCallback(singleSnapshot.getValue(Ingredient.class));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    public interface firebaseCallback<T> {
+        public void onCallback(T data);
     }
 }

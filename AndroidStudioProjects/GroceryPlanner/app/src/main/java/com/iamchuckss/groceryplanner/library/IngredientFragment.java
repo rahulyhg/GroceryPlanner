@@ -17,8 +17,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.iamchuckss.groceryplanner.R;
 import com.iamchuckss.groceryplanner.models.Ingredient;
+import com.iamchuckss.groceryplanner.utils.FirebaseMethods;
 import com.iamchuckss.groceryplanner.utils.IngredientFragmentRecyclerViewAdapter;
 import com.iamchuckss.groceryplanner.utils.RecipeFragmentRecyclerViewAdapter;
 
@@ -28,6 +36,13 @@ import de.hdodenhof.circleimageview.CircleImageView;
 
 public class IngredientFragment extends Fragment {
     private static final String TAG = "IngredientFragment";
+
+    // firebase
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference myRef;
+    private FirebaseMethods mFirebaseMethods;
 
     // vars
     private ArrayList<Ingredient> mIngredientsList = new ArrayList<>();
@@ -49,7 +64,9 @@ public class IngredientFragment extends Fragment {
         mContext = getActivity();
         recyclerView = view.findViewById(R.id.recyclerView);
         addIngredientButton = (CircleImageView) view.findViewById(R.id.btnAddIngredient);
+        mFirebaseMethods = new FirebaseMethods(mContext);
 
+        setupFirebaseAuth();
         initAddIngredientButton();
         initIngredients();
 
@@ -57,14 +74,15 @@ public class IngredientFragment extends Fragment {
     }
 
     private void initIngredients() {
-        Log.d(TAG, "populateIngredientList: preparing recipes.");
+        Log.d(TAG, "populateIngredientList: retrieving data from firebase for: " + mAuth.getCurrentUser().getUid());
+
 
         // TODO: get list of ingredients from database
 
-        mIngredientsList.add(new Ingredient("Curry Powder"));
-        mIngredientsList.add(new Ingredient("Cumin Powder"));
-        mIngredientsList.add(new Ingredient("Coriander"));
-        mIngredientsList.add(new Ingredient("Mustard Seeds"));
+//        mIngredientsList.add(new Ingredient("Curry Powder"));
+//        mIngredientsList.add(new Ingredient("Cumin Powder"));
+//        mIngredientsList.add(new Ingredient("Coriander"));
+        mIngredientsList.add(new Ingredient("recipe1", "Mustard Seeds"));
 
         initRecyclerView();
     }
@@ -117,13 +135,83 @@ public class IngredientFragment extends Fragment {
                 // set inputQuantity to input
                 if(!(userInput == null) && !userInput.equals("") && !userInput.equals(" ")) {
 
-                    mIngredientsList.add(new Ingredient(userInput));
-                    // TODO: add new ingredient to database
-                    mAdapter.notifyItemInserted(mIngredientsList.size() - 1);
-                }
+                    Log.d(TAG, "onClick: adding new ingredient to database.");
+                    mFirebaseMethods.addNewIngredient(userInput);
 
+                    Log.d(TAG, "onClick: retrieving added ingredient from database.");
+                    mFirebaseMethods.getIngredient(userInput
+                            , new FirebaseMethods.firebaseCallback<Ingredient>() {
+                                @Override
+                                public void onCallback(Ingredient ingredient) {
+                                    Log.d(TAG, "onClick: inserting added ingredient into list: " + ingredient);
+                                    mIngredientsList.add(ingredient);
+                                    mAdapter.notifyItemInserted(mIngredientsList.size() - 1);
+                                }
+                            });
+                }
                 dialog.dismiss();
             }
         });
+    }
+
+    /*
+    -----------------------------------Firebase-----------------------------------------------
+     */
+
+    /**
+     * Setup the firebase auth object
+     */
+    private void setupFirebaseAuth() {
+        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
+        mAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        myRef = mFirebaseDatabase.getReference();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                if(user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged: signed_in: " + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged: signed_out: ");
+                }
+            }
+        };
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+                // retrieve user information from database
+                // setProfileWidgets(mFirebaseMethods.getUserSettings(dataSnapshot));
+
+                // retrieve images for the user in question
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        mAuth.addAuthStateListener(mAuthListener);
+        FirebaseUser user = mAuth.getCurrentUser();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
     }
 }

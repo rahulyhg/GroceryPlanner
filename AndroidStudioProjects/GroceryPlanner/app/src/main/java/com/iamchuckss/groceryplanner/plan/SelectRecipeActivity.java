@@ -69,8 +69,8 @@ public class SelectRecipeActivity extends AppCompatActivity {
         Log.d(TAG, "populateRecipeList: populating recipe list");
         // TODO: get list of recipes from database
         ArrayList<Ingredient> ingredientList = new ArrayList<>();
-        ingredientList.add(new Ingredient("Cumin"));
-        ingredientList.add(new Ingredient("Curry"));
+        ingredientList.add(new Ingredient("recipe1", "Cumin"));
+//        ingredientList.add(new Ingredient("Curry"));
 
         mRecipeList.add(new Recipe("Curry", "www.curry.com", ingredientList));
         mRecipeList.add(new Recipe("Curry1", "www.curry.com", ingredientList));

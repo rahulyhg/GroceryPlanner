@@ -17,6 +17,9 @@ public class Recipe implements Serializable{
         checked = false;
     }
 
+    public Recipe() {
+    }
+
     public boolean isChecked() {
         return checked;
     }

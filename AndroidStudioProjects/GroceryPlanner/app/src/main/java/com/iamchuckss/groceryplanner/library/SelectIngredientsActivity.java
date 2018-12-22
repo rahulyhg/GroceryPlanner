@@ -61,10 +61,10 @@ public class SelectIngredientsActivity extends AppCompatActivity {
 
         // TODO: get list of ingredients from database
 
-        mIngredientList.add(new Ingredient("Curry Powder"));
-        mIngredientList.add(new Ingredient("Cumin Powder"));
-        mIngredientList.add(new Ingredient("Coriander"));
-        mIngredientList.add(new Ingredient("Mustard Seeds"));
+        mIngredientList.add(new Ingredient("recipe1", "Curry Powder"));
+//        mIngredientList.add(new Ingredient("Cumin Powder"));
+//        mIngredientList.add(new Ingredient("Coriander"));
+//        mIngredientList.add(new Ingredient("Mustard Seeds"));
 
         initRecyclerView();
     }
