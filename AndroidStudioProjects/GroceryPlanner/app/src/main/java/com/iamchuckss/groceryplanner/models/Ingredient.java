@@ -3,20 +3,23 @@ package com.iamchuckss.groceryplanner.models;
 import android.os.Parcel;
 import android.os.Parcelable;
 
+import com.iamchuckss.groceryplanner.utils.FirebaseMethods;
+
 import java.io.Serializable;
+import java.util.HashMap;
 
 public class Ingredient implements Serializable{
 
     private String ingredient_id;
     private String title;
-    private Integer quantity;
     private boolean checked;
+    private Integer quantity;
 
     public Ingredient(String ingredient_id, String title) {
         this.ingredient_id = ingredient_id;
         this.title = title;
-        this.quantity = 0;
         this.checked = false;
+        this.quantity = 0;
     }
 
     public Ingredient() {
@@ -38,18 +41,21 @@ public class Ingredient implements Serializable{
         this.title = title;
     }
 
-    public Integer getQuantity() {
-        return quantity;
-    }
-
     @Override
     public String toString() {
         return "Ingredient{" +
                 "ingredient_id='" + ingredient_id + '\'' +
                 ", title='" + title + '\'' +
-                ", quantity=" + quantity +
                 ", checked=" + checked +
                 '}';
+    }
+
+    public Integer getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Integer quantity) {
+        this.quantity = quantity;
     }
 
     public boolean isChecked() {
@@ -58,10 +64,6 @@ public class Ingredient implements Serializable{
 
     public void setChecked(boolean checked) {
         this.checked = checked;
-    }
-
-    public void setQuantity(Integer quantity) {
-        this.quantity = quantity;
     }
 
 }

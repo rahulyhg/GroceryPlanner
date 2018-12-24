@@ -76,15 +76,16 @@ public class IngredientFragment extends Fragment {
     private void initIngredients() {
         Log.d(TAG, "populateIngredientList: retrieving data from firebase for: " + mAuth.getCurrentUser().getUid());
 
-
-        // TODO: get list of ingredients from database
-
-//        mIngredientsList.add(new Ingredient("Curry Powder"));
-//        mIngredientsList.add(new Ingredient("Cumin Powder"));
-//        mIngredientsList.add(new Ingredient("Coriander"));
-        mIngredientsList.add(new Ingredient("recipe1", "Mustard Seeds"));
-
         initRecyclerView();
+
+        mFirebaseMethods.retrieveUserIngredients( new FirebaseMethods.firebaseCallback<Ingredient>() {
+                    @Override
+                    public void onCallback(Ingredient ingredient) {
+                        Log.d(TAG, "onClick: inserting ingredient into list: " + ingredient);
+                        mIngredientsList.add(ingredient);
+                        mAdapter.notifyItemInserted(mIngredientsList.size() - 1);
+                    }
+                });
     }
 
     private void initRecyclerView() {
@@ -136,15 +137,16 @@ public class IngredientFragment extends Fragment {
                 if(!(userInput == null) && !userInput.equals("") && !userInput.equals(" ")) {
 
                     Log.d(TAG, "onClick: adding new ingredient to database.");
-                    mFirebaseMethods.addNewIngredient(userInput);
+                    String ingredientId = mFirebaseMethods.addNewIngredient(userInput);
 
                     Log.d(TAG, "onClick: retrieving added ingredient from database.");
-                    mFirebaseMethods.getIngredient(userInput
+                    mFirebaseMethods.getIngredient(ingredientId
                             , new FirebaseMethods.firebaseCallback<Ingredient>() {
                                 @Override
                                 public void onCallback(Ingredient ingredient) {
-                                    Log.d(TAG, "onClick: inserting added ingredient into list: " + ingredient);
+                                    Log.d(TAG, "onCallback: inserting added ingredient into list: " + ingredient);
                                     mIngredientsList.add(ingredient);
+                                    Log.d(TAG, "onCallback: " + mIngredientsList);
                                     mAdapter.notifyItemInserted(mIngredientsList.size() - 1);
                                 }
                             });

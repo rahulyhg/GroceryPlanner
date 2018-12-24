@@ -17,16 +17,20 @@ import com.iamchuckss.groceryplanner.models.Ingredient;
 import com.iamchuckss.groceryplanner.models.Recipe;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class SelectRecipeRecyclerViewAdapter extends RecyclerView.Adapter<SelectRecipeRecyclerViewAdapter.ViewHolder> {
 
     private static final String TAG = "SelectRecipeRecyclerVie";
 
     private ArrayList<Recipe> mRecipeList = new ArrayList<>();
+    private HashMap<Integer, ArrayList<Ingredient>> mRecipeIngredientsMap = new HashMap<>();
     private Context mContext;
 
-    public SelectRecipeRecyclerViewAdapter(ArrayList<Recipe> mRecipeList, Context mContext) {
+    public SelectRecipeRecyclerViewAdapter(ArrayList<Recipe> mRecipeList, HashMap<Integer, ArrayList<Ingredient>> mRecipeIngredientsMap,
+                                           Context mContext) {
         this.mRecipeList = mRecipeList;
+        this.mRecipeIngredientsMap = mRecipeIngredientsMap;
         this.mContext = mContext;
     }
 
@@ -64,7 +68,8 @@ public class SelectRecipeRecyclerViewAdapter extends RecyclerView.Adapter<Select
         viewHolder.recipeWebsite.setText(mRecipeList.get(i).getWebsite()); // set recipe website
 
         // retrieve recipe ingredients
-        ArrayList<Ingredient> recipeIngredients = mRecipeList.get(i).getIngredients();
+        ArrayList<Ingredient> recipeIngredients = mRecipeIngredientsMap.get(i);
+        Log.d(TAG, "onBindViewHolder: " + mRecipeIngredientsMap);
         ArrayList<String> recipeIngredientsTitles = new ArrayList<>();
         for(Ingredient ingredient : recipeIngredients) {
             // get all ingredients' title

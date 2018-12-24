@@ -2,15 +2,17 @@ package com.iamchuckss.groceryplanner.models;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 
 public class Recipe implements Serializable{
 
+    String recipe_id;
     String title;
     String website;
-    ArrayList<Ingredient> ingredients;
+    HashMap<String, Integer> ingredients;
     boolean checked;
 
-    public Recipe(String title, String website, ArrayList<Ingredient> ingredients) {
+    public Recipe(String title, String website, HashMap<String, Integer> ingredients) {
         this.title = title;
         this.website = website;
         this.ingredients = ingredients;
@@ -18,6 +20,14 @@ public class Recipe implements Serializable{
     }
 
     public Recipe() {
+    }
+
+    public String getRecipe_id() {
+        return recipe_id;
+    }
+
+    public void setRecipe_id(String recipe_id) {
+        this.recipe_id = recipe_id;
     }
 
     public boolean isChecked() {
@@ -44,11 +54,11 @@ public class Recipe implements Serializable{
         this.website = website;
     }
 
-    public ArrayList<Ingredient> getIngredients() {
+    public HashMap<String, Integer> getIngredients() {
         return ingredients;
     }
 
-    public void setIngredients(ArrayList<Ingredient> ingredients) {
+    public void setIngredients(HashMap<String, Integer> ingredients) {
         this.ingredients = ingredients;
     }
 

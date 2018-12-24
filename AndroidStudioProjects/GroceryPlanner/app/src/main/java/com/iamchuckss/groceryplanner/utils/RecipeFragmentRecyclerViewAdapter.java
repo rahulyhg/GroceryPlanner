@@ -4,6 +4,7 @@ import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,21 +12,38 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 import com.iamchuckss.groceryplanner.R;
 import com.iamchuckss.groceryplanner.models.Ingredient;
 import com.iamchuckss.groceryplanner.models.Recipe;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 
 public class RecipeFragmentRecyclerViewAdapter extends RecyclerView.Adapter<RecipeFragmentRecyclerViewAdapter.ViewHolder> {
 
     private static final String TAG = "RecipeFragmentRvAdapter";
 
     private ArrayList<Recipe> mRecipeList = new ArrayList<>();
+    private HashMap<Integer, ArrayList<Ingredient>> mRecipeIngredientsMap = new HashMap<>();
     private Context mContext;
 
-    public RecipeFragmentRecyclerViewAdapter(ArrayList<Recipe> mRecipeList, Context mContext) {
+    // firebase
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference myRef;
+    private FirebaseMethods mFirebaseMethods;
+
+    public RecipeFragmentRecyclerViewAdapter(ArrayList<Recipe> mRecipeList, HashMap<Integer, ArrayList<Ingredient>> mRecipeIngredientsMap,
+                                             Context mContext) {
         this.mRecipeList = mRecipeList;
+        this.mRecipeIngredientsMap = mRecipeIngredientsMap;
         this.mContext = mContext;
     }
 
@@ -59,10 +77,11 @@ public class RecipeFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Reci
 
         viewHolder.recipeTitle.setText(mRecipeList.get(i).getTitle()); // set recipe title
         viewHolder.recipeWebsite.setText(mRecipeList.get(i).getWebsite()); // set recipe website
+        Log.d(TAG, "onBindViewHolder: " + mRecipeIngredientsMap);
+        ArrayList<Ingredient> recipeIngredients = mRecipeIngredientsMap.get(i);
 
-        // retrive recipe ingredients
-        ArrayList<Ingredient> recipeIngredients = mRecipeList.get(i).getIngredients();
         ArrayList<String> recipeIngredientsTitles = new ArrayList<>();
+
         for(Ingredient ingredient : recipeIngredients) {
             // get all ingredients' title
             recipeIngredientsTitles.add(ingredient.getTitle());
@@ -85,4 +104,5 @@ public class RecipeFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Reci
     public int getItemCount() {
         return mRecipeList.size();
     }
+
 }

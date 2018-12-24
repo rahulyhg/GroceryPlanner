@@ -67,11 +67,13 @@ public class SignupActivity extends AppCompatActivity {
                 username = mUserName.getText().toString();
                 password = mPassword.getText().toString();
 
-                if(checkInputs(email, username, password)) {
-                    mProgressBar.setVisibility(View.VISIBLE);
-                    mPleaseWait.setVisibility(View.VISIBLE);
+                mProgressBar.setVisibility(View.VISIBLE);
+                mPleaseWait.setVisibility(View.VISIBLE);
 
+                if(checkInputs(email, username, password)) {
                     firebaseMethods.registerNewEmail(email, password, username);
+                    mProgressBar.setVisibility(View.GONE);
+                    mPleaseWait.setVisibility(View.GONE);
                 }
             }
         });

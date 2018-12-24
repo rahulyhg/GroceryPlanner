@@ -19,26 +19,45 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.iamchuckss.groceryplanner.R;
 import com.iamchuckss.groceryplanner.models.Ingredient;
+import com.iamchuckss.groceryplanner.utils.FirebaseMethods;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class SelectIngredientsActivity extends AppCompatActivity {
 
     private static final String TAG = "SelectIngredientsActivi";
 
     // vars
-    ArrayList<Ingredient> mIngredientList = new ArrayList<>();
+    ArrayList<Ingredient> mIngredientsList = new ArrayList<>();
     ArrayList<Ingredient> mSelectedIngredientsList = new ArrayList<>();
+    String currentRecipeId;
 
     Context mContext = SelectIngredientsActivity.this;
 
     // widgets
     RecyclerView recyclerView;
+    SelectIngredientRvAdapter mAdapter;
     ImageView mBackButton;
     ImageView mDoneButton;
+
+    // firebase
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference myRef;
+    private FirebaseMethods mFirebaseMethods;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -47,35 +66,63 @@ public class SelectIngredientsActivity extends AppCompatActivity {
 
         setContentView(R.layout.activity_select_ingredients);
 
+        mFirebaseMethods = new FirebaseMethods(mContext);
+        setupFirebaseAuth();
+
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mBackButton = (ImageView) findViewById(R.id.backArrow);
         mDoneButton = (ImageView) findViewById(R.id.done_button);
 
+        initializeSelectedIngredientsList();
         initBackButton();
         initDoneButton();
         populateIngredientList();
     }
 
+    private void initializeSelectedIngredientsList() {
+        Intent intent = getIntent();
+        mSelectedIngredientsList = (ArrayList) intent.getSerializableExtra("selectedIngredients");
+
+        if(mSelectedIngredientsList == null) {
+            mSelectedIngredientsList = new ArrayList<>();
+        }
+    }
+
     private void populateIngredientList() {
         Log.d(TAG, "populateIngredientList: preparing recipes.");
 
-        // TODO: get list of ingredients from database
-
-        mIngredientList.add(new Ingredient("recipe1", "Curry Powder"));
-//        mIngredientList.add(new Ingredient("Cumin Powder"));
-//        mIngredientList.add(new Ingredient("Coriander"));
-//        mIngredientList.add(new Ingredient("Mustard Seeds"));
-
         initRecyclerView();
+
+        mFirebaseMethods.retrieveUserIngredients( new FirebaseMethods.firebaseCallback<Ingredient>() {
+            @Override
+            public void onCallback(Ingredient ingredient) {
+                Log.d(TAG, "onClick: inserting ingredient into list: " + ingredient);
+
+                // if ingredient is selected, change quantity
+                if(!mSelectedIngredientsList.isEmpty()) {
+
+                    for(Ingredient selectedIngredient : mSelectedIngredientsList) {
+                        if(ingredient.getTitle().equals(selectedIngredient.getTitle())) {
+                            ingredient.setQuantity(selectedIngredient.getQuantity());
+                            ingredient.setChecked(true);
+                        }
+                    }
+                }
+
+                mIngredientsList.add(ingredient);
+                mAdapter.notifyItemInserted(mIngredientsList.size() - 1);
+            }
+        });
+
+
     }
 
     private void initRecyclerView() {
         Log.d(TAG, "initRecyclerView: init recyclerview");
 
-        SelectIngredientRvAdapter adapter = new SelectIngredientRvAdapter(
-                mContext, mIngredientList);
+        mAdapter = new SelectIngredientRvAdapter(mContext, mIngredientsList);
 
-        recyclerView.setAdapter(adapter);
+        recyclerView.setAdapter(mAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(mContext));
     }
 
@@ -99,20 +146,21 @@ public class SelectIngredientsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                mSelectedIngredientsList.clear();
+
                 // fetch ingredients with quantity
-                for(int i = 0; i < mIngredientList.size(); i++) {
+                for(int i = 0; i < mIngredientsList.size(); i++) {
                     if(isIngredientSelected(i)) {
-                        mSelectedIngredientsList.add(mIngredientList.get(i));
+                        mSelectedIngredientsList.add(mIngredientsList.get(i));
                     }
                 }
                 Log.d(TAG, "onClick: mSelectedIngredientList: " + mSelectedIngredientsList.toString());
 
-                // return result if valid
-                if(mSelectedIngredientsList.size() != 0) {
-                    Intent intent = new Intent();
-                    intent.putExtra("selectedIngredients", (Serializable) mSelectedIngredientsList);
-                    setResult(RESULT_OK, intent);
-                }
+                // return result
+                Intent intent = new Intent();
+                intent.putExtra("selectedIngredients", (Serializable) mSelectedIngredientsList);
+                setResult(RESULT_OK, intent);
+
 
                 finish();
             }
@@ -126,11 +174,9 @@ public class SelectIngredientsActivity extends AppCompatActivity {
      */
     private boolean isIngredientSelected(int position) {
 
-        return (mIngredientList.get(position).getQuantity() != 0);
+        return (mIngredientsList.get(position).getQuantity() != 0);
 
     }
-
-
 
 
     /**
@@ -254,6 +300,63 @@ public class SelectIngredientsActivity extends AppCompatActivity {
                     dialog.dismiss();
                 }
             });
+        }
+    }
+
+    /*
+    -----------------------------------Firebase-----------------------------------------------
+     */
+
+    /**
+     * Setup the firebase auth object
+     */
+    private void setupFirebaseAuth() {
+        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
+        mAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        myRef = mFirebaseDatabase.getReference();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                if(user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged: signed_in: " + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged: signed_out: ");
+                }
+            }
+        };
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        mAuth.addAuthStateListener(mAuthListener);
+        FirebaseUser user = mAuth.getCurrentUser();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
         }
     }
 }

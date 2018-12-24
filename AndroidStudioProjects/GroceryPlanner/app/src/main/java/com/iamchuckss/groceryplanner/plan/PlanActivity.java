@@ -109,7 +109,7 @@ public class PlanActivity extends AppCompatActivity{
         super.onActivityResult(requestCode, resultCode, data);
 
         if(requestCode == SELECT_RECIPE_REQUEST_CODE) {
-            Log.d(TAG, "onActivityResult: done selecting ingredients ");
+            Log.d(TAG, "onActivityResult: done selecting recipes");
             if(resultCode == RESULT_OK) {
                 Log.d(TAG, "onActivityResult: result is valid");
 

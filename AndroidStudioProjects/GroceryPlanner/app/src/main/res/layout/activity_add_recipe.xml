@@ -10,22 +10,22 @@
 
         <!-- top toolbar -->
         <RelativeLayout
+            android:id="@+id/relLayout1"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/relLayout1">
+            android:layout_height="wrap_content">
 
-            <include layout="@layout/snippet_top_add_recipe_toolbar"/>
+            <include layout="@layout/snippet_top_add_recipe_toolbar" />
 
         </RelativeLayout>
 
         <!-- middle body -->
         <RelativeLayout
+            android:id="@id/relLayout2"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/relLayout1"
-            android:id="@id/relLayout2">
+            android:layout_below="@id/relLayout1">
 
-            <include layout="@layout/snippet_center_add_recipe"/>
+            <include layout="@layout/snippet_center_add_recipe" />
 
         </RelativeLayout>
 

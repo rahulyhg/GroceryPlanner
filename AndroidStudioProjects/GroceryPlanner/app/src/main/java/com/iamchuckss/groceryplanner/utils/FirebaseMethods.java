@@ -20,7 +20,11 @@ import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
 import com.iamchuckss.groceryplanner.R;
 import com.iamchuckss.groceryplanner.models.Ingredient;
+import com.iamchuckss.groceryplanner.models.Recipe;
 import com.iamchuckss.groceryplanner.models.User;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class FirebaseMethods {
     private static final String TAG = "FirebaseMethods";
@@ -99,8 +103,8 @@ public class FirebaseMethods {
     }
 
     /**
-     * Add infromation to the users nodes
-     * Add information to the user_account_settings node
+     * Add infromation to the users node
+     *
      * @param email
      * @param username
      */
@@ -134,16 +138,48 @@ public class FirebaseMethods {
     }
 
     /**
-     * Retrieve ingredient from database
+     * Retrieve ingredient from database by id
      *
-     * @param title
+     * @param id
      */
-    public void getIngredient(String title, final firebaseCallback<Ingredient> callback) {
+    public void getIngredient(String id, final firebaseCallback<Ingredient> callback) {
 
+        Log.d(TAG, "getIngredient: querying database..");
+        
         final Query query = myRef.child(mContext.getString(R.string.db_name_user_ingredients))
                 .child(userID)
-                .orderByChild(mContext.getString(R.string.field_ingredient_title))
-                .equalTo(title);
+                .orderByKey()
+                .equalTo(id);
+
+        // return a datasnapshot only if a match is found
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    for(DataSnapshot singleSnapshot: dataSnapshot.getChildren()) {
+
+                        callback.onCallback(singleSnapshot.getValue(Ingredient.class));
+
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+
+    }
+
+    /**
+     * Retrieve user's ingredients from database
+     *
+     */
+    public void retrieveUserIngredients(final firebaseCallback<Ingredient> callback) {
+
+        final Query query = myRef.child(mContext.getString(R.string.db_name_user_ingredients))
+                .child(userID);
 
         // return a datasnapshot only if a match is found
         query.addListenerForSingleValueEvent(new ValueEventListener() {
@@ -159,11 +195,64 @@ public class FirebaseMethods {
 
             @Override
             public void onCancelled(@NonNull DatabaseError databaseError) {
-
+                Log.d(TAG, "onCancelled: " + databaseError.getMessage());
             }
         });
-
     }
+
+    /**
+     * Add new recipe to the user_recipes node
+     *
+      * @param recipe
+     * @return recipe_id of added recipe
+     */
+    public String addNewRecipe(Recipe recipe) {
+
+        Log.d(TAG, "addNewRecipe: adding new recipe: " + recipe.getTitle());
+
+        // push to create new entry
+        DatabaseReference newRef = myRef.child(mContext.getString(R.string.dbname_user_recipes))
+                .child(userID)
+                .push();
+
+        // set recipe_id
+        recipe.setRecipe_id(newRef.getKey());
+
+        // insert new recipe
+        newRef.setValue(recipe);
+
+        return recipe.getRecipe_id();
+    }
+
+    /**
+     * Retrieve user's recipes from database
+     *
+     */
+    public void retrieveUserRecipes(final firebaseCallback<Recipe> callback) {
+
+        final Query query = myRef.child(mContext.getString(R.string.dbname_user_recipes))
+                .child(userID);
+
+        // return a datasnapshot only if a match is found
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    for(DataSnapshot singleSnapshot: dataSnapshot.getChildren()) {
+
+                        callback.onCallback(singleSnapshot.getValue(Recipe.class));
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled: " + databaseError.getMessage());
+            }
+        });
+    }
+
+
 
     public interface firebaseCallback<T> {
         public void onCallback(T data);
