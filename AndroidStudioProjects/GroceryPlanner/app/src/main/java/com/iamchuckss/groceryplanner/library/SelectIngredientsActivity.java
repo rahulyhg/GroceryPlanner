@@ -114,7 +114,6 @@ public class SelectIngredientsActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
     private void initRecyclerView() {
@@ -160,7 +159,6 @@ public class SelectIngredientsActivity extends AppCompatActivity {
                 Intent intent = new Intent();
                 intent.putExtra("selectedIngredients", (Serializable) mSelectedIngredientsList);
                 setResult(RESULT_OK, intent);
-
 
                 finish();
             }

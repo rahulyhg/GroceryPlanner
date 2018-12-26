@@ -252,6 +252,56 @@ public class FirebaseMethods {
         });
     }
 
+    /**
+     * Add new plan to user_plan node
+     * @param day
+     * @param recipeList
+     */
+    public void addPlan(int day, ArrayList<Recipe> recipeList) {
+
+        Log.d(TAG, "savePlan: Adding new plan to: " + Days.getString(day) + ": " + recipeList);
+
+        String dayField = Days.getDatabaseField(day);
+
+        myRef.child(mContext.getString(R.string.db_name_user_plan))
+                .child(userID)
+                .child(dayField)
+                .setValue(recipeList);
+
+        Log.d(TAG, "addPlan: plan added for: " + Days.getString(day));
+    }
+
+    public void retrievePlan(int day, final firebaseCallback<ArrayList<Recipe>> callback) {
+
+        final ArrayList<Recipe> recipeList = new ArrayList<>();
+        Log.d(TAG, "retrievePlan: getting plan for: " + Days.getString(day));
+
+        final String dayField = Days.getDatabaseField(day);
+
+        Query query = myRef.child(mContext.getString(R.string.db_name_user_plan))
+                .child(userID)
+                .child(dayField);
+
+        // return a datasnapshot only if a match is found
+        query.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+                if(dataSnapshot.exists()) {
+                    for(DataSnapshot singleSnapshot: dataSnapshot.getChildren()) {
+
+                        recipeList.add(singleSnapshot.getValue(Recipe.class));
+                    }
+                    Log.d(TAG, "onDataChange: Plan retrieved for: " + dayField + ": " + recipeList);
+                }
+                callback.onCallback(recipeList);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+                Log.d(TAG, "onCancelled: " + databaseError.getMessage());
+            }
+        });
+    }
 
 
     public interface firebaseCallback<T> {

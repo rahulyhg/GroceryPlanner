@@ -1,10 +1,14 @@
 package com.iamchuckss.groceryplanner.plan;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.media.Image;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,10 +23,20 @@ import android.widget.ImageView;
 import android.widget.PopupMenu;
 import android.widget.TextView;
 
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 import com.iamchuckss.groceryplanner.R;
 import com.iamchuckss.groceryplanner.models.Recipe;
 import com.iamchuckss.groceryplanner.utils.BottomNavigationViewHelper;
+import com.iamchuckss.groceryplanner.utils.Days;
+import com.iamchuckss.groceryplanner.utils.FirebaseMethods;
 import com.iamchuckss.groceryplanner.utils.PlanActivityRecyclerViewAdapter;
+import com.iamchuckss.groceryplanner.utils.WorkCounter;
 import com.ittianyu.bottomnavigationviewex.BottomNavigationViewEx;
 
 import org.w3c.dom.Text;
@@ -35,6 +49,13 @@ public class PlanActivity extends AppCompatActivity{
     private static final String TAG = "PlanActivity";
     private static final int ACTIVITY_NUM = 1;
     private static final int SELECT_RECIPE_REQUEST_CODE = 11;
+
+    // firebase
+    private FirebaseAuth mAuth;
+    private FirebaseAuth.AuthStateListener mAuthListener;
+    private FirebaseDatabase mFirebaseDatabase;
+    private DatabaseReference myRef;
+    private FirebaseMethods mFirebaseMethods;
 
     // vars
     TreeMap<Integer, ArrayList<Recipe>> mRecipeList = new TreeMap<>();
@@ -50,6 +71,9 @@ public class PlanActivity extends AppCompatActivity{
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_plan);
+
+        mFirebaseMethods = new FirebaseMethods(mContext);
+        setupFirebaseAuth();
 
         mToolbar = (Toolbar) findViewById(R.id.plan_toolbar);
         mRecyclerView = (RecyclerView) findViewById(R.id.recyclerView);
@@ -71,13 +95,81 @@ public class PlanActivity extends AppCompatActivity{
     }
 
     private void initRecipeList() {
-        mRecipeList.put(0, new ArrayList<Recipe>());
-        mRecipeList.put(1, new ArrayList<Recipe>());
-        mRecipeList.put(2, new ArrayList<Recipe>());
-        mRecipeList.put(3, new ArrayList<Recipe>());
-        mRecipeList.put(4, new ArrayList<Recipe>());
-        mRecipeList.put(5, new ArrayList<Recipe>());
-        mRecipeList.put(6, new ArrayList<Recipe>());
+
+        final WorkCounter workCounter = new WorkCounter(7, mContext);
+
+        mFirebaseMethods.retrievePlan(Days.MONDAY, new FirebaseMethods.firebaseCallback<ArrayList<Recipe>>() {
+            @Override
+            public void onCallback(ArrayList<Recipe> data) {
+                mRecipeList.put(Days.MONDAY, data);
+                workCounter.taskFinished();
+                Log.d(TAG, "onCallback: workCounter: " + workCounter.getRunningTasks());
+            }
+        });
+
+        mFirebaseMethods.retrievePlan(Days.TUESDAY, new FirebaseMethods.firebaseCallback<ArrayList<Recipe>>() {
+            @Override
+            public void onCallback(ArrayList<Recipe> data) {
+                mRecipeList.put(Days.TUESDAY, data);
+                workCounter.taskFinished();
+                Log.d(TAG, "onCallback: workCounter: " + workCounter.getRunningTasks());
+            }
+        });
+
+        mFirebaseMethods.retrievePlan(Days.WEDNESDAY, new FirebaseMethods.firebaseCallback<ArrayList<Recipe>>() {
+            @Override
+            public void onCallback(ArrayList<Recipe> data) {
+                mRecipeList.put(Days.WEDNESDAY, data);
+                workCounter.taskFinished();
+                Log.d(TAG, "onCallback: workCounter: " + workCounter.getRunningTasks());
+            }
+        });
+
+        mFirebaseMethods.retrievePlan(Days.THURSDAY, new FirebaseMethods.firebaseCallback<ArrayList<Recipe>>() {
+            @Override
+            public void onCallback(ArrayList<Recipe> data) {
+                mRecipeList.put(Days.THURSDAY, data);
+                workCounter.taskFinished();
+                Log.d(TAG, "onCallback: workCounter: " + workCounter.getRunningTasks());
+            }
+        });
+
+        mFirebaseMethods.retrievePlan(Days.FRIDAY, new FirebaseMethods.firebaseCallback<ArrayList<Recipe>>() {
+            @Override
+            public void onCallback(ArrayList<Recipe> data) {
+                mRecipeList.put(Days.FRIDAY, data);
+                workCounter.taskFinished();
+                Log.d(TAG, "onCallback: workCounter: " + workCounter.getRunningTasks());
+            }
+        });
+
+        mFirebaseMethods.retrievePlan(Days.SATURDAY, new FirebaseMethods.firebaseCallback<ArrayList<Recipe>>() {
+            @Override
+            public void onCallback(ArrayList<Recipe> data) {
+                mRecipeList.put(Days.SATURDAY, data);
+                workCounter.taskFinished();
+                Log.d(TAG, "onCallback: workCounter: " + workCounter.getRunningTasks());
+            }
+        });
+
+        mFirebaseMethods.retrievePlan(Days.SUNDAY, new FirebaseMethods.firebaseCallback<ArrayList<Recipe>>() {
+            @Override
+            public void onCallback(ArrayList<Recipe> data) {
+                mRecipeList.put(Days.SUNDAY, data);
+                workCounter.taskFinished();
+                Log.d(TAG, "onCallback: workCounter: " + workCounter.getRunningTasks());
+            }
+        });
+
+        // if all task done, update UI
+        LocalBroadcastManager mgr = LocalBroadcastManager.getInstance(this.mContext);
+        mgr.registerReceiver(new BroadcastReceiver() {
+            @Override
+            public void onReceive(Context context, Intent intent) {
+                Log.d(TAG, "onReceive: broadcast received.");
+                mAdapter.notifyDataSetChanged();
+            }
+        }, new IntentFilter(mContext.getString(R.string.task_finished_broadcast)));
     }
 
     private void initOptionButton() {
@@ -117,13 +209,20 @@ public class PlanActivity extends AppCompatActivity{
                 int currentDay = data.getIntExtra("currentDay", 10);
                 ArrayList<Recipe> selectedRecipeList = (ArrayList) (data.getSerializableExtra("selectedRecipes"));
 
+                if(selectedRecipeList == null) {
+                    selectedRecipeList = new ArrayList<>();
+                }
+
                 // get selected recipes list
-                if(currentDay >= 0 && currentDay <= 6 && (selectedRecipeList != null)) {
+                if(currentDay >= 0 && currentDay <= 6) {
                     mRecipeList.put(currentDay, selectedRecipeList);
-                    Log.d(TAG, "onActivityResult: Selected recipes: " + selectedRecipeList.toString());
+
+                    Log.d(TAG, "onActivityResult: mRecipeList: " + mRecipeList.get(currentDay));
+                    Log.d(TAG, "onActivityResult: Selected recipes: " + selectedRecipeList);
 
                     // adapt recipes onto mRecipeList
                     updateRecipeList(currentDay, selectedRecipeList);
+                    mAdapter.notifyDataSetChanged();
                 }
             }
         }
@@ -135,18 +234,16 @@ public class PlanActivity extends AppCompatActivity{
         View view = viewHolder.itemView;
         TextView recipeList = (TextView) view.findViewById(R.id.recipe_list);
 
-        ArrayList<String> selectedRecipesTitles = new ArrayList<>();
-        // get recipes' title from list
-        for(Recipe recipe : selectedRecipes) {
-            selectedRecipesTitles.add(recipe.getTitle());
-        }
+        Log.d(TAG, "updateRecipeList: selectedRecipes: " + selectedRecipes);
 
         recipeList.setText("");
 
-        for(String recipeTitle : selectedRecipesTitles) {
-            recipeList.append(recipeTitle);
+        // get recipes' title from list
+        for(Recipe recipe : selectedRecipes) {
+            recipeList.append(recipe.getTitle());
             recipeList.append("\n");
         }
+
     }
 
     /**
@@ -162,4 +259,61 @@ public class PlanActivity extends AppCompatActivity{
         MenuItem menuItem = menu.getItem(ACTIVITY_NUM);
         menuItem.setChecked(true);
     }
+/*
+    -----------------------------------Firebase-----------------------------------------------
+     */
+
+    /**
+     * Setup the firebase auth object
+     */
+    private void setupFirebaseAuth() {
+        Log.d(TAG, "setupFirebaseAuth: setting up firebase auth");
+        mAuth = FirebaseAuth.getInstance();
+        mFirebaseDatabase = FirebaseDatabase.getInstance();
+        myRef = mFirebaseDatabase.getReference();
+
+        mAuthListener = new FirebaseAuth.AuthStateListener() {
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+
+                if(user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged: signed_in: " + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged: signed_out: ");
+                }
+            }
+        };
+
+        myRef.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError databaseError) {
+
+            }
+        });
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // Check if user is signed in (non-null) and update UI accordingly.
+        mAuth.addAuthStateListener(mAuthListener);
+        FirebaseUser user = mAuth.getCurrentUser();
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        if(mAuthListener != null) {
+            mAuth.removeAuthStateListener(mAuthListener);
+        }
+    }
+
 }

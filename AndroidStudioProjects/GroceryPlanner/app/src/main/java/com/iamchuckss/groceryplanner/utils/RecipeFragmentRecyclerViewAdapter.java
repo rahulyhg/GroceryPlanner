@@ -77,7 +77,7 @@ public class RecipeFragmentRecyclerViewAdapter extends RecyclerView.Adapter<Reci
 
         viewHolder.recipeTitle.setText(mRecipeList.get(i).getTitle()); // set recipe title
         viewHolder.recipeWebsite.setText(mRecipeList.get(i).getWebsite()); // set recipe website
-        Log.d(TAG, "onBindViewHolder: " + mRecipeIngredientsMap);
+        Log.d(TAG, "onBindViewHolder: mRecipeIngredientsMap: " + mRecipeIngredientsMap);
         ArrayList<Ingredient> recipeIngredients = mRecipeIngredientsMap.get(i);
 
         ArrayList<String> recipeIngredientsTitles = new ArrayList<>();

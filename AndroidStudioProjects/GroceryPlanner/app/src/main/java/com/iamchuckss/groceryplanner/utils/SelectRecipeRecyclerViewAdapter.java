@@ -90,18 +90,16 @@ public class SelectRecipeRecyclerViewAdapter extends RecyclerView.Adapter<Select
                 // get clicked checkbox
                 CheckBox checkBox = (CheckBox) v.findViewById(R.id.checkbox);
 
-                // check checkBox status
-                if(!checkBox.isChecked()) { // checkBox is not checked
+                if(checkBox.isChecked()) { // checkBox is checked
                     // set recipe to checked
                     mRecipeList.get(i).setChecked(true);
 
-                } else { // checkBox is checked
+                } else { // checkBox is unchecked
                     // set recipe to unchecked
                     mRecipeList.get(i).setChecked(false);
                 }
 
-                // set recipe to checked
-                mRecipeList.get(i).setChecked(true);
+                Log.d(TAG, "onClick: " + mRecipeList.get(i).getTitle() + " is checked: " + mRecipeList.get(i).isChecked());
             }
         });
     }

@@ -77,7 +77,8 @@ public class SelectRecipeActivity extends AppCompatActivity {
         // retrieve currentDay
         Intent intent = getIntent();
         currentDay = intent.getIntExtra("currentDay", 10);
-        // TODO: retrieve selectedRecipesList
+        mSelectedRecipeList = (ArrayList) intent.getSerializableExtra("currentSelectedRecipes");
+        Log.d(TAG, "onCreate: selected recipes retrieved: " +mSelectedRecipeList);
 
         recyclerView = (RecyclerView) findViewById(R.id.recyclerView);
         mBackButton = (ImageView) findViewById(R.id.backArrow);
@@ -90,6 +91,8 @@ public class SelectRecipeActivity extends AppCompatActivity {
 
     private void populateRecipeList() {
         initRecyclerView();
+
+        mapCounter = 0;
 
         mFirebaseMethods.retrieveUserRecipes( new FirebaseMethods.firebaseCallback<Recipe>() {
             @Override
@@ -117,6 +120,16 @@ public class SelectRecipeActivity extends AppCompatActivity {
                 mRecipeIngredientsMap.put(mapCounter, recipeIngredients);
                 Log.d(TAG, "onCallback: " + mRecipeIngredientsMap);
                 ++mapCounter;
+
+                // if recipe is selected, check
+                if(!mSelectedRecipeList.isEmpty()) {
+
+                    for(Recipe selectedRecipe : mSelectedRecipeList) {
+                        if(recipe.getTitle().equals(selectedRecipe.getTitle())) {
+                            recipe.setChecked(true);
+                        }
+                    }
+                }
                 mRecipeList.add(recipe);
             }
         });
@@ -156,21 +169,21 @@ public class SelectRecipeActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                // fetch ingredients with quantity
+                mSelectedRecipeList = new ArrayList<>();
+
+                // fetch checked recipes
                 for(int i = 0; i < mRecipeList.size(); i++) {
                     if(isRecipeSelected(i)) {
                         mSelectedRecipeList.add(mRecipeList.get(i));
                     }
                 }
-                Log.d(TAG, "onClick: mSelectedIngredientList: " + mSelectedRecipeList.toString());
+                Log.d(TAG, "onClick: mSelectedRecipeList: " + mSelectedRecipeList.toString());
 
-                // return result if valid
-                if(mSelectedRecipeList.size() != 0) {
-                    Intent intent = new Intent();
-                    intent.putExtra("currentDay", currentDay);
-                    intent.putExtra("selectedRecipes", (Serializable) mSelectedRecipeList);
-                    setResult(RESULT_OK, intent);
-                }
+                Intent intent = new Intent();
+                intent.putExtra("currentDay", currentDay);
+                intent.putExtra("selectedRecipes", (Serializable) mSelectedRecipeList);
+                setResult(RESULT_OK, intent);
+                mFirebaseMethods.addPlan(currentDay, mSelectedRecipeList);
 
                 finish();
             }

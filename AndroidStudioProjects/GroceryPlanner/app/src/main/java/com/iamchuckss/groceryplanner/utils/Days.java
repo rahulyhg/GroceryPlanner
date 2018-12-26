@@ -2,7 +2,7 @@ package com.iamchuckss.groceryplanner.utils;
 
 public class Days {
 
-    public static final int MONDAY = 1;
+    public static final int MONDAY = 0;
     public static final int TUESDAY = 1;
     public static final int WEDNESDAY = 2;
     public static final int THURSDAY = 3;
@@ -26,6 +26,26 @@ public class Days {
                 return "Saturday";
             case 6:
                 return "Sunday";
+        }
+        return "";
+    }
+
+    public static String getDatabaseField(int i) {
+        switch(i) {
+            case 0:
+                return "monday";
+            case 1:
+                return "tuesday";
+            case 2:
+                return "wednesday";
+            case 3:
+                return "thursday";
+            case 4:
+                return "friday";
+            case 5:
+                return "saturday";
+            case 6:
+                return "sunday";
         }
         return "";
     }

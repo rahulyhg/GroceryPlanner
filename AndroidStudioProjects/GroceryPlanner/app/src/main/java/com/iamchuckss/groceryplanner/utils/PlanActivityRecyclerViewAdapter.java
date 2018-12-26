@@ -55,11 +55,13 @@ public class PlanActivityRecyclerViewAdapter extends RecyclerView.Adapter<PlanAc
             mRecipeList = (TextView) itemView.findViewById(R.id.recipe_list);
         }
 
-        public void initRecipeList(ArrayList<String> recipesTitleList) {
+        public void initRecipeList(ArrayList<Recipe> recipesList) {
             Log.d(TAG, "initRecipeList: initializing mRecipeList");
 
-            for(String recipeTitle : recipesTitleList) {
-                mRecipeList.append(recipeTitle);
+            mRecipeList.setText("");
+
+            for(Recipe recipe : recipesList) {
+                mRecipeList.append(recipe.getTitle());
                 mRecipeList.append("\n");
             }
         }
@@ -81,14 +83,11 @@ public class PlanActivityRecyclerViewAdapter extends RecyclerView.Adapter<PlanAc
         final int day = getTreeMapKeyFromIndex(i);
         final ArrayList<Recipe> selectedRecipes = mRecipeList.get(day);
 
-        ArrayList<String> selectedRecipesTitles = new ArrayList<>();
-        // get recipes' title from list
-        for(Recipe recipe : selectedRecipes) {
-            selectedRecipesTitles.add(recipe.getTitle());
+        if(selectedRecipes != null) {
+            viewHolder.initRecipeList(selectedRecipes);
         }
 
         viewHolder.mDayTitle.setText(Days.getString(day));
-        viewHolder.initRecipeList(selectedRecipesTitles);
 
         viewHolder.mParentLayout.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -96,7 +95,6 @@ public class PlanActivityRecyclerViewAdapter extends RecyclerView.Adapter<PlanAc
                 Log.d(TAG, "onClick: clicked on: " + Days.getString(getTreeMapKeyFromIndex(i)));
 
                 // start select recipes activity
-                // TODO: consider if selectedRecipes is not empty -> send data over intent
                 Intent intent = new Intent(mContext, SelectRecipeActivity.class);
                 intent.putExtra("currentDay", day);
                 intent.putExtra("currentSelectedRecipes", selectedRecipes);

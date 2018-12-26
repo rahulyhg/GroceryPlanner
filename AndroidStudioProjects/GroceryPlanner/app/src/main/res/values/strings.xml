@@ -16,4 +16,14 @@
     <string name="field_ingredient_title">title</string>
     <string name="field_recipe_title">title</string>
 
+    <string name="field_monday">monday</string>
+    <string name="field_tuesday">tuesday</string>
+    <string name="field_wednesday">wednesday</string>
+    <string name="field_thursday">thursday</string>
+    <string name="field_friday">friday</string>
+    <string name="field_saturday">saturday</string>
+    <string name="field_sunday">sunday</string>
+
+    <string name="task_finished_broadcast">Task finished.</string>
+
 </resources>
