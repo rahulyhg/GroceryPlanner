@@ -15,7 +15,7 @@
         android:textColor="@color/black"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
-        android:textSize="15sp" />
+        android:textSize="20sp" />
 
     <TextView
         android:id="@+id/ingredient_quantity"
@@ -24,8 +24,9 @@
         android:text="5"
         android:textColor="@color/black"
         android:layout_height="wrap_content"
-        android:textSize="15sp"
+        android:textSize="20sp"
         android:inputType="number"
-        android:layout_toRightOf="@+id/ingredient_title"/>
+        android:layout_toRightOf="@+id/ingredient_title"
+        android:background="@drawable/white_grey_border"/>
 
 </RelativeLayout>

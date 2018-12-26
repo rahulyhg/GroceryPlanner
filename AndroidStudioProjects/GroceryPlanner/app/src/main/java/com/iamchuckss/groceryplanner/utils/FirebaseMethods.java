@@ -303,6 +303,19 @@ public class FirebaseMethods {
         });
     }
 
+    /**
+     * retrieve user's grocery list from database
+     *
+     * @param ingredientsList
+     */
+    public void updateGroceryList(ArrayList<Ingredient> ingredientsList) {
+
+    }
+
+    public void retrieveGroceryList(firebaseCallback<Ingredient> ingredient) {
+
+    }
+
 
     public interface firebaseCallback<T> {
         public void onCallback(T data);

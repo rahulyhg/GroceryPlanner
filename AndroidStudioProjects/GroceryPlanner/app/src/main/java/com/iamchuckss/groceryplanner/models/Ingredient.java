@@ -7,6 +7,7 @@ import com.iamchuckss.groceryplanner.utils.FirebaseMethods;
 
 import java.io.Serializable;
 import java.util.HashMap;
+import java.util.Objects;
 
 public class Ingredient implements Serializable{
 
@@ -66,4 +67,18 @@ public class Ingredient implements Serializable{
         this.checked = checked;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Ingredient that = (Ingredient) o;
+        return checked == that.checked &&
+                Objects.equals(ingredient_id, that.ingredient_id) &&
+                Objects.equals(title, that.title);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(ingredient_id, title, checked);
+    }
 }
